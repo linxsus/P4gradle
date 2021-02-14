@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.P4Metier.Factory.Factory;
+import org.P4Metier.id.GestIdDonneeLong;
 import org.P4Modele_.Calculer;
 import org.P4Modele_.Neud;
 import org.P4Modele_.NeudArbre;
@@ -57,7 +58,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	public NeudArbreBasic(Factory factory) {
 		super();
 		this.factory = factory;
-		id = 1L;//TODO je pense que sa devrait etre 0L
+		id = 0L;
 		niveau = 0;
 	}
 
@@ -291,8 +292,22 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public String toString() {
-		return "Neud [parent=" + parent + ", enfant=" + enfant + ", feuille=" + feuille + ", explorable=" + explorable
-				+ ", id=" + id + ", calculer=" + calculer + ", niveau=" + niveau + "]\n";
+		String str;
+		str="Neud [parent=" + parent + ", enfant=" + enfant + ", feuille=" + feuille + ", explorable=" + explorable
+				+ ", id=" + id + ", calculer=" + calculer + ", niveau=" + niveau + "]\n"+new GestIdDonneeLong(factory).getDonneeId(id);
+		str+="parent \n";
+		for (Long temp : getParent()) {
+			str+=new GestIdDonneeLong(factory).getDonneeId(temp);
+
+		}
+		str+="enfent \n";
+		for (Long temp : getEnfant()) {
+			str+=new GestIdDonneeLong(factory).getDonneeId(temp);
+
+		}
+		
+		
+		return str;
 	}
 
 	@Override

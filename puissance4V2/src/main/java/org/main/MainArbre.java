@@ -17,7 +17,7 @@ public class MainArbre {
 		GestIdDonneeLong donnee = (GestIdDonneeLong) factory.getGestIDDonnee();
 		Gagnee gagnee = factory.getGagnee();
 		Ordinateur<Long> ordi = factory.getOrdinateur(donnee);
-		ordi.setTourMax(4);
+		ordi.setTourMax(26);
 		boolean gg = false;
 
 		sc = new Scanner(System.in);
@@ -25,8 +25,6 @@ public class MainArbre {
 		int colone;
 		donnee.ajoutPion(4);
 		donnee.ajoutPion(1);
-		donnee.ajoutPion(3);
-		donnee.ajoutPion(7);
 		//donnee.ajoutPion(5);
 		for (int i = 0; (i < (7 * 6)) && !gg; i++) {
 			if (donnee.getJoueur() != 1) {

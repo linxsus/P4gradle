@@ -6,17 +6,20 @@ import org.P4Metier.Factory.Factory;
 import org.P4Metier.id.GestIdDonneeLong;
 import org.P4Metier.ordi.OrdinateurArbre;
 import org.P4Modele_.GestDonnee;
+import org.P4Modele_.Neud;
 import org.Persistant_.mysql.MysqlConnection;
+import org.Persistant_.requette.SqlArbre;
 
-public class MainTestBd {
+public class MainLectureNeud {
 
 	public static void main(String[] args) {
-		int temp[][] = { { 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0 },
-				{ 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0 } };
+		SqlArbre sqlArbre;
 		Factory factory = new Factory(true, true, true, true);
-		GestIdDonneeLong test=new GestIdDonneeLong(factory);
+		sqlArbre = factory.getMysqlArbre();
 		Scanner sc = new Scanner(System.in);
-		System.out.println(test.getDonneeId(choisirColone(sc)));
+		while (true) {
+		Neud neudArbre = sqlArbre.getNeud(choisirColone(sc));
+		System.out.println(neudArbre);}
 	}
 
 	private static long choisirColone(Scanner sc) {

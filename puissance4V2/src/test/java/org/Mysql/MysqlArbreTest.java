@@ -64,11 +64,11 @@ class MysqlArbreTest {
 		collection.add(factory.getNeudArbre(10L, 0));
 		sqlArbre.saveNeud(collection);
 		HashMap<Long, NeudArbre> resultat = sqlArbre.getExplorable(0, 2);
-		Long[] temp = { 4L, 6L };
+		Long[] temp = {10L, 6L };
 		assertTrue(Arrays.equals(resultat.keySet().toArray(), temp), "erreur dans le GetExplorable"
 				+ Arrays.toString(resultat.keySet().toArray()) + " au lieux de" + Arrays.toString(temp));
 		resultat = sqlArbre.getExplorable(0, 10);
-		Long[] temp1 = { 4L, 6L, 10L };
+		Long[] temp1 = { 10L, 6L, 4L };
 		assertTrue(Arrays.equals(resultat.keySet().toArray(), temp1), "erreur dans le GetExplorable"
 				+ Arrays.toString(resultat.keySet().toArray()) + " au lieux de " + Arrays.toString(temp1));
 	}

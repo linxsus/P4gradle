@@ -1,8 +1,10 @@
 package org.P4Modele_.arbre;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.P4Metier.Factory.Factory;
 import org.P4Metier.id.GestIdDonneeLong;
@@ -132,14 +134,15 @@ public class ArbreBasic implements Arbre {
 	 */
 	protected void setCalculerPrivate(Long idCalculer, Calculer calculer) {
 		NeudArbre neud = tableau.get(idCalculer);
-		// on met que le neud est calculer
-		neud.setCalculer(calculer);
 		// si on a bien calculer
 		if (calculer != Calculer.NONCALCULER) {
+			// on met que le neud est calculer
+			neud.setCalculer(calculer);
 			// le neud n'est plus explorable
 			neud.setExplorable(false);
 			// pour tous les parents
 			for (Long tempParent : neud.getParent()) {
+				//on calcul
 				calculer(tempParent);
 
 			}
@@ -335,7 +338,7 @@ public class ArbreBasic implements Arbre {
 	 * @param enfant
 	 *            l'enfant
 	 */
-	protected void removeLien(Long parent, long enfant) {
+	protected void removeLien(long parent, long enfant) {
 		// recuperation des feuilles parent et enfant on espere qu'elle existe sinon le
 		// programe sortira une erreur
 		NeudArbre feuilleParent = tableau.get(parent);
@@ -362,7 +365,7 @@ public class ArbreBasic implements Arbre {
 	 * @param id
 	 *            id du neud a verifier
 	 */
-	protected void neudSuprimable(Long id) {
+	public boolean neudSuprimable(Long id) {
 		Neud courant = tableau.get(id);
 		boolean suprimable = true;
 		// si le neud(id) n'est pas calculer
@@ -385,6 +388,7 @@ public class ArbreBasic implements Arbre {
 		if (suprimable) {
 			neudSuprimable.add(id);
 		}
+		return suprimable;
 	}
 
 	/**
@@ -394,8 +398,16 @@ public class ArbreBasic implements Arbre {
 	 *            id du neud sur le quelle travailler
 	 */
 	protected void enfantSuprimable(Long id) {
+		Set<Long> tabEnfant=new HashSet<Long>();
 		for (Long enfant : tableau.get(id).getEnfant()) {
-			neudSuprimable(enfant);
+			if (!neudSuprimable(enfant) &&(tableau.get(enfant).getCalculer()==Calculer.NONCALCULER))
+			{
+				tableau.get(enfant).removeParent(id);
+				tabEnfant.add(enfant);
+			};
+		}
+		for (Long enfant : tabEnfant) {
+			tableau.get(id).removeParent(enfant);
 		}
 	}
 
