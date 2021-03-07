@@ -22,7 +22,7 @@ public class SynchronizationBD {
 	/**
 	 * nb d'enregistrement maximum a recharger (nbexplorable)
 	 */
-	public final static int NBEXPLORABLEMAX = 3000;
+	public final static int NBEXPLORABLEMAX = 10000;
 
 	/**
 	 * @see Factory
@@ -106,6 +106,10 @@ public class SynchronizationBD {
 				e.printStackTrace();
 			}
 		}
+		// gestion de l'affichage
+				if ((affichageNb % 1) == 0) {
+					affichage(niveau, tampon);
+				}
 		// si on n'a pas d'explorable
 		if (newExplorable.size() == 0) {
 			// on sauvegarde et on recupere la 1er tranche en directe
@@ -113,10 +117,7 @@ public class SynchronizationBD {
 			sauvegarde(copyTampon);
 			newExplorable = sqlArbre.getExplorable(niveau, NBEXPLORABLEMAX);
 		}
-		// gestion de l'affichage
-		if ((affichageNb % 1) == 0) {
-			affichage(niveau, tampon);
-		}
+		
 		affichageNb++;
 		// on met de coter les explorable recuperer
 		Map<Long, NeudArbre> tempExplorable = newExplorable;
@@ -153,6 +154,7 @@ public class SynchronizationBD {
 	 * @param Tampon
 	 */
 	protected void affichage(int niveau, TamponBD Tampon) {
+		if (tampon.getEditNeud().size()>0) {
 		long fin = System.currentTimeMillis();
 		System.out.println();
 		long resultat = 0;
@@ -160,10 +162,10 @@ public class SynchronizationBD {
 			resultat = (tampon.getEditNeud().size() * 10000) / (fin - debut);
 		}
 
-		String str = "object update " + tampon.getEditNeud().size() + " object ajouter " + tampon.getNewLien().size()
+		String str = "object modifier " + tampon.getEditNeud().size() + " object ajouter " + tampon.getNewNeud().size()
 				+ " object suprimer " + tampon.getRemoveNeud().size();
-		System.out.print(" " + str + " niveau " + (niveau + 1) + " op/s " + resultat);
-		debut = fin;
+		System.out.print(" niveau " + (niveau + 1) +" " + str +  " op/s " + resultat);
+		debut = fin;}
 	}
 
 	/**

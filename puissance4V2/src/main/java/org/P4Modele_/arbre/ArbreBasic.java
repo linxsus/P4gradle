@@ -407,7 +407,7 @@ public class ArbreBasic implements Arbre {
 			};
 		}
 		for (Long enfant : tabEnfant) {
-			tableau.get(id).removeParent(enfant);
+			tableau.get(id).removeEnfant(enfant);
 		}
 	}
 

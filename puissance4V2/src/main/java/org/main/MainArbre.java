@@ -26,6 +26,7 @@ public class MainArbre {
 		donnee.ajoutPion(4);
 		donnee.ajoutPion(1);
 		//donnee.ajoutPion(5);
+		//donnee.ajoutPion(7);
 		for (int i = 0; (i < (7 * 6)) && !gg; i++) {
 			if (donnee.getJoueur() != 1) {
 				System.out.println(donnee);

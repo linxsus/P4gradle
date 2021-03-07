@@ -42,6 +42,15 @@ public class TamponBD {
 	 *            neud a ajouter
 	 */
 	public void addNeud(Neud neud) {
+		//TODO ici modif
+		//boolean ok=true;
+		/*
+		if (removeNeud.contains(neud.getId())) {
+			System.out.println("removeNeud "+neud.getId());
+		}
+		if (removeNeudAncien.contains(neud.getId())) {
+			System.out.println("removeNeudAncien "+neud.getId());
+		}*/
 		newNeud.add(neud);
 	}
 

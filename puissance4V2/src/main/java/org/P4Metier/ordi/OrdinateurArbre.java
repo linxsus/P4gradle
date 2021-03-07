@@ -95,8 +95,8 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 	@Override
 	public int jouer() {
 		Gagnee gagnee = factory.getGagnee();
-		boolean miroire = donnee.isMiroire();
-		HashMap<Integer, Long> resultatColonne = new HashMap<>();
+		//boolean miroire = donnee.isMiroire();
+		//HashMap<Integer, Long> resultatColonne = new HashMap<>();
 		int niveauInitial = donnee.getNbPionJouer();
 		int niveau = niveauInitial;
 		long idParent = 0;
@@ -108,11 +108,18 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 		long tron = donnee.getIdBaseDonnee();
 		// je lui affecte le tron
 		arbre.setTron(tron, niveauInitial);
-		while (niveau < niveauMax) {
+		boolean ok=false;
+		while (!ok) {
 			// je recupere le neud suivant explorable
 			next = arbre.nextExplorable(niveau);
 			if (next == null) {
 				niveau++;
+				if (niveau >= niveauMax) {
+					ok=true;
+				}
+				if (arbre.getNeud(tron).getCalculer()!=Calculer.NONCALCULER) {
+					ok=true;
+				}
 			} else {
 				//TODO next.getId() puis donneeTravaille.getIdBaseDonnee() pourquoi recalculer l'id??
 				// je recupere le neud de travaille
@@ -127,9 +134,11 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 					donneeTravaille.ajoutPion(colonnes[i] + 1);
 					idEnfant = donneeTravaille.getIdBaseDonnee();
 					// je sauvegade le lien colonne,enfant que pour le niveau initial pour faire calculer
+					/*
 					if (niveau == niveauInitial) {
 						resultatColonne.put(colonnes[i], idEnfant);
 					}
+					*/
 					Neud enfant = arbre.addEnfant(idParent, idEnfant);
 					// si j'ai gagnee je renseigne l'arbre
 					if ((enfant.getCalculer() == Calculer.GAGNER) || gagnee.isGagnee(donneeTravaille)) {
@@ -142,12 +151,14 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 				arbre.setExplorableFalse(idParent);
 			}
 		}
+		return calculer();
+		/*
 		if (miroire) {
 			return (GestDonnee.LARGEUR - (calculer(resultatColonne, arbre) - 1));
 		} else {
 			return calculer(resultatColonne, arbre);
 		}
-
+		*/
 	}
 
 	@Override
@@ -164,46 +175,47 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 	 *            arbre
 	 * @return la colonne a jouer
 	 */
-	private int calculer(HashMap<Integer, Long> resultatColonne, Arbre arbre) {
-		int resultat = 0;
+	private int calculer() {
+		long resultat = 0;
 		int nbPerdu = 0;
 		int nbGagner = 0;
 		int nbNonCalculer = 0; // a voir si utile
 		int nbEgaliter = 0;
-		int[] perduTab = new int[GestDonnee.LARGEUR];
-		int[] gagnerTab = new int[GestDonnee.LARGEUR];
-		int[] nonCalculerTab = new int[GestDonnee.LARGEUR];
-		int[] egaliterTab = new int[GestDonnee.LARGEUR];
+		long[] perduTab = new long[GestDonnee.LARGEUR];
+		long[] gagnerTab = new long[GestDonnee.LARGEUR];
+		long[] nonCalculerTab = new long[GestDonnee.LARGEUR];
+		long[] egaliterTab = new long[GestDonnee.LARGEUR];
 		Calculer enfantCalculer;
-		int nbEnfant = resultatColonne.size();
-		Set<Entry<Integer, Long>> enfants = resultatColonne.entrySet();
+		
+		int nbEnfant=arbre.getNeud(donnee.getIdBaseDonnee()).getEnfant().size();
+		
 		// si il y a des enfant
 		if (nbEnfant > 0) {
 			// pour tous les enfants
-			for (Entry<Integer, Long> aCalculer : enfants) {
-				Neud neudEnfant = arbre.getNeud(aCalculer.getValue());
+			for ( Long aCalculer : arbre.getNeud(donnee.getIdBaseDonnee()).getEnfant()) {
+				Neud neudEnfant = arbre.getNeud(aCalculer);
 				// au cas ou la gestion de l'arbre aurrais 'supprimer' l'enfant
 				if (neudEnfant != null) {
-					enfantCalculer = arbre.getNeud(aCalculer.getValue()).getCalculer();
+					enfantCalculer = arbre.getNeud(aCalculer).getCalculer();
 					// je calul si gagner, si j'ai bien tous les enfant de calculer le nb de perdu,
 					// le nb d'egaliter
 					switch (enfantCalculer) {
 					case GAGNER:
-						gagnerTab[nbGagner] = aCalculer.getKey(); // la faut trouver autre chose
+						gagnerTab[nbGagner] = aCalculer; // la faut trouver autre chose
 						nbGagner++;
 						break;
 					case INDEFINI:
 					case NONCALCULER:
-						nonCalculerTab[nbNonCalculer] = aCalculer.getKey(); // la faut trouver autre chose
+						nonCalculerTab[nbNonCalculer] = aCalculer; // la faut trouver autre chose
 						nbNonCalculer++;
 						break;
 					case EGALITER:
-						egaliterTab[nbEgaliter] = aCalculer.getKey(); // la faut trouver autre chose
+						egaliterTab[nbEgaliter] = aCalculer; // la faut trouver autre chose
 						nbEgaliter++;
 						break;
 					case PERDU:
 					default:
-						perduTab[nbPerdu] = aCalculer.getKey(); // la faut trouver autre chose
+						perduTab[nbPerdu] = aCalculer; // la faut trouver autre chose
 						nbPerdu++;
 						break;
 					}
@@ -231,7 +243,12 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 				resultat = auHazard(perduTab, nbPerdu);
 			}
 		}
-		return resultat + 1; // un +1???
+		
+		if (donnee.isMiroire()) {
+			return (GestDonnee.LARGEUR - (difLong(arbre.getTron(),resultat)));
+		} else {
+			return difLong(arbre.getTron(),resultat) + 1;
+		}
 	}
 
 	/**
@@ -244,7 +261,7 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 	 *            nb premier choix
 	 * @return le nb choisi
 	 */
-	private int auHazard(int[] tab, int nb) {
+	private long auHazard(long[] tab, int nb) {
 		Random rnd = new Random();
 		int i = rnd.nextInt(nb);
 		return tab[i];
@@ -254,4 +271,55 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 		tourMax = i;
 	}
 
+	/**
+	 * 
+	 */
+	//TODO a deplacer dans une la bonne class
+	//TODO a rendre comprensible
+	private int difLong(long l1,long l2)
+	{
+		int resultat=0;
+		int[] nbPionColone1=new int[7];
+		int[] nbPionColone2=new int[7];
+		//for (int i = LARGEUR - 1; i >= 0; i--) {
+		for (int i = 7- 1; i >= 0; i--) {
+			// je recupere le nb de pion mis
+			nbPionColone1[i] = (int) (l1 % 7);
+			nbPionColone2[i] = (int) (l2 % 7);
+			// je decale pour pouvoir lire l'info suivante
+			l1 /= 7;
+			l2 /= 7;
+			if (nbPionColone1[i]>0) {
+				l1 /= 2*nbPionColone1[i];
+			}
+			if (nbPionColone2[i]>0) {
+				l2 /= 2*nbPionColone2[i];
+			}
+		}
+		int colDif=0;
+		int resColDif=-1;
+		int colDifMiroire=0;
+		int resColDifMiroire=-1;
+		for (int i=0;i<7;i++)
+		{
+			if (nbPionColone1[i]!=nbPionColone2[i]) {
+				colDif++;
+				resColDif=i;
+			}
+			if (nbPionColone1[i]!=nbPionColone2[6-i]) {
+				colDifMiroire++;
+				resColDifMiroire=i;
+			}
+		}
+		if (colDif==1)
+		{
+			resultat=resColDif;
+		}
+		if (colDifMiroire==1)
+		{
+			resultat=resColDifMiroire;
+		}
+		
+		return resultat;
+	}
 }
