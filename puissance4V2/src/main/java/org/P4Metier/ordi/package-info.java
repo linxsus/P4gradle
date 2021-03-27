@@ -1,8 +1,6 @@
 /**
  * 
+ * @author xavier xavier.gouraud@wanadoo.fr
  */
-/**
- * @author Xavier Gouraud
- *
- */
+
 package org.P4Metier.ordi;

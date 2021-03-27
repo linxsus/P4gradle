@@ -32,11 +32,11 @@ public class ExecuteSqlInsertMultiple<T> {
 			for (T t : m) {
 				forEach(t);
 				st.addBatch();
-				i++;
-				// System.out.println(st);
-				if ((i % 1000) == 0) {
-					st.executeBatch(); // Execute every 1000 items.
-				}
+//				i++;
+//				// System.out.println(st);
+//				if ((i % 1000) == 0) {
+//					st.executeBatch(); // Execute every 1000 items.
+//				}
 			}
 			
 			st.executeBatch();

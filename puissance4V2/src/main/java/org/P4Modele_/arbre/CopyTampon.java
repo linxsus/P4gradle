@@ -5,6 +5,14 @@ import java.util.HashSet;
 
 import org.P4Modele_.Neud;
 
+/**
+ * 
+ * class pour la gestion de la copy des tampon
+ * 
+ * 
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
+ *
+ */
 public class CopyTampon {
 
 	private Collection<Neud> newNeud;

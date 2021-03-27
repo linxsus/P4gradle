@@ -14,7 +14,7 @@ import org.Persistant_.requette.SqlArbre;
 /**
  * class permetant la synchronisation entre une base de donnee et la mapArbre
  *
- * @author Xavier Gouraud
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
  *
  */
 public class SynchronizationBD {
@@ -22,7 +22,7 @@ public class SynchronizationBD {
 	/**
 	 * nb d'enregistrement maximum a recharger (nbexplorable)
 	 */
-	public final static int NBEXPLORABLEMAX = 10000;
+	public final static int NBEXPLORABLEMAX = 9000;
 
 	/**
 	 * @see Factory
@@ -96,7 +96,7 @@ public class SynchronizationBD {
 	 *
 	 */
 	public Map<Long, NeudArbre> synchronization(int niveau) {
-
+		//System.out.println("synchro");
 		// si ce n'est pas la 1er fois
 		if (thread != null) {
 			// on verifie que le thread precedent est bien finit
@@ -116,6 +116,7 @@ public class SynchronizationBD {
 			copyTampon = factory.getCopyTampon();
 			sauvegarde(copyTampon);
 			newExplorable = sqlArbre.getExplorable(niveau, NBEXPLORABLEMAX);
+			//System.out.print("\n nb eplorable pas chargee au max : "+newExplorable.size());
 		}
 		
 		affichageNb++;
@@ -128,7 +129,7 @@ public class SynchronizationBD {
 		// on lance le thread sur 2eme tranche
 		thread = new Thread(new ThreadLoadExplorable(factory, newExplorable, niveau, NBEXPLORABLEMAX, copyTampon));
 		thread.start();
-
+		
 		// on retourne le map id neud des explorable
 		// attention !!! cette liste n'est pas a jour il faut la verifier avant de
 		// l'exploiter!!!
@@ -159,12 +160,21 @@ public class SynchronizationBD {
 		System.out.println();
 		long resultat = 0;
 		if ((fin - debut) != 0) {
-			resultat = (tampon.getEditNeud().size() * 10000) / (fin - debut);
+			resultat = (NBEXPLORABLEMAX * 10000) / (fin - debut);
 		}
 
-		String str = "object modifier " + tampon.getEditNeud().size() + " object ajouter " + tampon.getNewNeud().size()
-				+ " object suprimer " + tampon.getRemoveNeud().size();
-		System.out.print(" niveau " + (niveau + 1) +" " + str +  " op/s " + resultat);
+		String str = tampon.getEditNeud().size() +" object modifier " +   tampon.getNewNeud().size()+" object ajouter " +
+				tampon.getRemoveNeud().size()+ " object suprimer " ;
+		System.out.print(" niveau " + (niveau + 1) +" " + str +  " op/10s " + resultat);
+//		if (resultat<1400) {
+//			System.out.print("\n pause----------------------");
+//			try {
+//				Thread.sleep(10 * 1000);
+//				fin = System.currentTimeMillis();
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		debut = fin;}
 	}
 
@@ -175,7 +185,7 @@ public class SynchronizationBD {
 	 *            copy du tampon a sauvegarder
 	 */
 	private void sauvegarde(CopyTampon copyTampon) {
-		// facon de faire pour desactiver l'autocomit :(
+		// facon de faire pour gerer la reprise sur erreur / interuption 
 		sqlArbre.saveReprise(copyTampon.getEditNeud());
 		// sauvegarde
 		sqlArbre.removeLien(copyTampon.getRemoveLien());
@@ -183,7 +193,7 @@ public class SynchronizationBD {
 		sqlArbre.saveNeud(copyTampon.getNewNeud());
 		sqlArbre.saveLien(copyTampon.getNewLien());
 		sqlArbre.editNeud(copyTampon.getEditNeud());
-		// le commit
+		// tout a ete fait on peut suprimer la gestion de reprise sur erreur / interuption
 		sqlArbre.removeReprise();
 	}
 

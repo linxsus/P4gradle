@@ -83,6 +83,7 @@ public class Factory {
 		this.idLong = idLong;
 		this.tabByte = tabByte;
 		this.gagneeTabByte = gagneeTabByte;
+		factory=this;
 	}
 
 	/**
@@ -345,12 +346,20 @@ public class Factory {
 	}
 
 	/**
+	 * il n'y a qu'un seul object tampon par factory
+	 */
+	protected SynchronizationBD synchronizationBD = null;
+	
+	/**
 	 * creation d'u object de synchronisation entre la base et le mapArbre
 	 *
 	 * @return
 	 */
 	public SynchronizationBD getSynchronizationBD() {
-		return new SynchronizationBD(this);
+		if (synchronizationBD == null) {
+			synchronizationBD = new SynchronizationBD(this);
+		}
+		return synchronizationBD;
 	}
 
 	// TODO a ameliorer car il devrait renvoyer soit map soit
@@ -373,4 +382,18 @@ public class Factory {
 	public CopyTampon getCopyTampon() {
 		return new CopyTampon(tampon);
 	}
+	
+	static private Factory factory;
+
+	/**
+	 * @return the factory
+	 */
+	static public Factory getFactory() {
+		return factory;
+	}
+	
+	static public void setFactory(Factory temp) {
+	   factory=temp;
+	}
+	
 }

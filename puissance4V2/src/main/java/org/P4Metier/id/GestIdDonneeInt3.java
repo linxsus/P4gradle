@@ -7,7 +7,7 @@ import org.P4Metier.Factory.Factory;
 import org.P4Modele_.GestDonnee;
 
 /**
- * l'id est de type int[3]<br>
+ * class pour le calcul de l'id de type int[3]<br>
  *
  * construction de l'id<br>
  * on travaille en base 3<br>
@@ -18,9 +18,10 @@ import org.P4Modele_.GestDonnee;
  * ...<br>
  * 8eme chifre du 1er int correspond au pion en [1][0]<br>
  * 8eme chifre du 1er int correspond au pion en [1][1]<br>
- * ... 1er chifre du 2eme int correspond au pion en [2][0]<br>
+ * ...<br> 
+ * 1er chifre du 2eme int correspond au pion en [2][0]<br>
  * 2eme chifre du 2eme int correspond au pion en [2][1]<br>
- *
+ *<br>
  * ce qui donne pour ajouter un pion du joueur 2 en [0][0] on a donc<br>
  * int[0]=(base3) 0000000|0000002<br>
  * (en base 10) 2 <br>
@@ -40,7 +41,7 @@ import org.P4Modele_.GestDonnee;
  *
  * @see GestIdDonnee
  *
- * @author Xavier Gouraud
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
  *
  */
 public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
@@ -56,10 +57,21 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 	 */
 	private GestDonnee baseDonnee;
 
+	/**
+	 *  le factory 
+	 */
 	protected Factory factory;
+	
+	
+	/**
+	 *  tableau contenant Mat.pow(3,x) evite de refaire sans arret des calcul.
+	 */
+	private final int[] matPow3 = { 1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147, 531441, 1594323 };
 
 	/**
 	 * constructeur
+	 * 
+	 * @param factory le factory pour cree des object
 	 */
 	public GestIdDonneeInt3(Factory factory) {
 		super();
@@ -67,22 +79,31 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 		baseDonnee = factory.getGestBaseDonnee();
 	}
 
-	public GestIdDonneeInt3(GestDonnee donneeId) {
+	
+	/**
+	 * constructeur avec comme parametre un gestDonnee deja d'initialiser
+	 * 
+	 * @param donneeId un gestDonnee deja d'initialiser
+	 * @param factory le factory pour cree des object
+	 */
+	public GestIdDonneeInt3(GestDonnee donneeId,Factory factory) {
 		super();
 		baseDonnee = donneeId;
 		idBaseDonnee = CalculInitIdBaseDonnee();
+		this.factory = factory;
 	}
 
 	@Override
 	public boolean ajoutPion(int colonne) {
-		// tableau de Mat.pow(3,x) evite de refaire sans arret des calcul.
-		final int[] matPow3 = { 1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147, 531441, 1594323 };
 		// si le pion est dans le tableau
 		// nessesaire car colonne peut venir de saisie utilisateur.
 		if ((colonne > 0) && (colonne <= GestDonnee.LARGEUR)) {
 			// on enleve 1 car recuperation de la saisie utilisateur.
 			--colonne;
 			// on calcul sur quelle indice du tableau on est
+			// ligne 1 a 2 indice 0
+			// ligne 3 a 4 indice 1
+			// ligne 5 a 6 indice 2
 			int nbPionColonne = getNbPionColonne(colonne);
 			int indice = nbPionColonne / 2;
 			// on calcul les nouveau id (id 'normal' et 'inverse')
@@ -98,8 +119,6 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 
 	@Override
 	public boolean enleverPion() {
-		// tableau de Mat.pow(3,x) evite de refaire sans arret des calcul.
-		final int[] matPow3 = { 1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147, 531441, 1594323 };
 		// on recupere sur quelle colonne le dernier pion a ete jouer
 		int colonneDerJouer = getDernierJouerPion()[getNbPionJouer() - 1];
 		// on calcul sur quelle indice du tableau on est
@@ -211,7 +230,7 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 
 	@Override
 	public GestIdDonnee<int[]> newBaseDonneeId(int[] id) {
-		return new GestIdDonneeInt3(getDonneeId(id));
+		return new GestIdDonneeInt3(getDonneeId(id),factory);
 	}
 
 	@Override
@@ -222,7 +241,7 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 	/**
 	 * recalcul complet de l'id. utile en cas d'import
 	 *
-	 * @return
+	 * @return les 2 id normal et inverser (6 int)
 	 */
 	private int[] CalculInitIdBaseDonnee() {
 		int[] resultat = new int[6];

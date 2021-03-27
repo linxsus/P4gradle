@@ -1,9 +1,8 @@
 package org.P4Metier.ordi;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
+
 import java.util.Random;
-import java.util.Set;
+
 
 import org.P4Metier.Gagnee;
 import org.P4Metier.GestIdDonnee;
@@ -121,6 +120,9 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 					ok=true;
 				}
 			} else {
+				
+				//System.out.print(" "+next.getId());
+				
 				//TODO next.getId() puis donneeTravaille.getIdBaseDonnee() pourquoi recalculer l'id??
 				// je recupere le neud de travaille
 				donneeTravaille = donnee.newBaseDonneeId(next.getId());
@@ -289,11 +291,11 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 			// je decale pour pouvoir lire l'info suivante
 			l1 /= 7;
 			l2 /= 7;
-			if (nbPionColone1[i]>0) {
-				l1 /= 2*nbPionColone1[i];
+			for (int j = 0; j < nbPionColone1[i]; j++) {
+				l1 /= 2;
 			}
-			if (nbPionColone2[i]>0) {
-				l2 /= 2*nbPionColone2[i];
+			for (int j = 0; j < nbPionColone2[i]; j++) {
+				l2 /= 2;
 			}
 		}
 		int colDif=0;

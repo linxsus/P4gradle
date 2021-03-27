@@ -6,12 +6,15 @@ package org.P4Modele_.arbre;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.P4Metier.Factory.Factory;
 import org.P4Metier.arbre.SynchronizationBD;
 import org.P4Modele_.GestDonnee;
 import org.P4Modele_.Neud;
 
 /**
- * @author Xavier Gouraud
+ * 
+ * 
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
  *
  */
 
@@ -42,15 +45,6 @@ public class TamponBD {
 	 *            neud a ajouter
 	 */
 	public void addNeud(Neud neud) {
-		//TODO ici modif
-		//boolean ok=true;
-		/*
-		if (removeNeud.contains(neud.getId())) {
-			System.out.println("removeNeud "+neud.getId());
-		}
-		if (removeNeudAncien.contains(neud.getId())) {
-			System.out.println("removeNeudAncien "+neud.getId());
-		}*/
 		newNeud.add(neud);
 	}
 
@@ -103,6 +97,11 @@ public class TamponBD {
 		Long neudId = neud.getId();
 		if (!newNeud.remove(neud)) {
 			removeNeud.add(neudId);
+			//System.out.println("neud suprimable"+removeNeud.size());
+//			if (removeNeud.size()>1000) {
+//				System.out.println("test");
+//				Factory.getFactory().getSynchronizationBD().synchronization(35);
+//			}
 		}
 		// ici pas d'ajout dans neudTotalModif car suppression
 		// mais il faut bien pensser avant une lecture en base a exlure ces

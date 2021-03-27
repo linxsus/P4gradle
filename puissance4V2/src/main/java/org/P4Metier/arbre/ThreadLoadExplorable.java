@@ -1,6 +1,6 @@
 package org.P4Metier.arbre;
 
-import java.sql.Connection;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -10,6 +10,13 @@ import org.P4Modele_.NeudArbre;
 import org.P4Modele_.arbre.CopyTampon;
 import org.Persistant_.requette.SqlArbre;
 
+/**
+ * thread pour la gestion de
+ * 
+ * 
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
+ *
+ */
 public class ThreadLoadExplorable implements Runnable {
 
 	/**
@@ -24,21 +31,24 @@ public class ThreadLoadExplorable implements Runnable {
 	 * maximum de neud qu' on recharge dans le tampon
 	 */
 	private int maxTampon;
-	/**
-	 * object pour cree les nouveau objet
-	 */
-	private Factory factory;
+//	/**
+//	 * object pour cree les nouveau objet
+//	 */
+//	private Factory factory;
 	/**
 	 * object qui contien toute les requette sql.
+	 * @see sqlArbre
+	 * 
 	 */
 	private SqlArbre sqlArbre;
 
 	/**
 	 * a partir de quelle enregistrement je lit les explorables
+	 * @see copyTampon
 	 */
 	private CopyTampon copyTampon;
 
-	private Connection cn;
+
 
 	/**
 	 * constructeur du thread
@@ -57,31 +67,61 @@ public class ThreadLoadExplorable implements Runnable {
 	 */
 	public ThreadLoadExplorable(Factory factory, Map<Long, NeudArbre> newExplorable, int niveau, int maxTampon,
 			CopyTampon copyTampon) {
-		this.factory = factory;
+//		this.factory = factory;
 		this.newExplorable = newExplorable;
 		this.niveau = niveau;
 		this.maxTampon = maxTampon;
 		this.copyTampon = copyTampon;
 		sqlArbre = factory.getMysqlArbre();
-		cn = factory.getBaseConnection();
 	}
 
 	@Override
 	public void run() {
-		// facon de faire pour desactiver l'autocomit :(
+		// facon de faire pour gerer la reprise sur erreur / interuption 
 		sqlArbre.saveReprise(copyTampon.getEditNeud());
 		// sauvegarde
-		sqlArbre.removeLien(copyTampon.getRemoveLien());
-		sqlArbre.removeNeud(copyTampon.getRemoveNeud());
-		sqlArbre.saveNeud(copyTampon.getNewNeud());
-		sqlArbre.saveLien(copyTampon.getNewLien());
+		Thread r1 =new Thread() {
+			public void run() {sqlArbre.removeLien(copyTampon.getRemoveLien());}
+		};
+		Thread r2 =new Thread() {
+			public void run() {sqlArbre.removeNeud(copyTampon.getRemoveNeud());}
+		};
+		r1.start();
+		r2.start();
+		try {
+			r1.join();
+			r2.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		r1 =new Thread() {
+			public void run() {sqlArbre.saveNeud(copyTampon.getNewNeud());}
+		};
+		r2 =new Thread() {
+			public void run() {sqlArbre.saveLien(copyTampon.getNewLien());}
+		};
+		r1.start();
+		r2.start();
+		try {
+			r1.join();
+			r2.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		sqlArbre.editNeud(copyTampon.getEditNeud());
-		// le commit
+		// tout a ete fait on peut suprimer la gestion de reprise sur erreur / interuption
 		sqlArbre.removeReprise();
 
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// on recupere les neud sans parent ni enfant
 		newExplorable.putAll(sqlArbre.getExplorable(niveau, maxTampon, maxTampon));
 		// on recharge les parent des neud explorable
+		//TODO vraiment utile????
 		newExplorable.forEach(new BiConsumer<Long, NeudArbre>() {
 			@Override
 			public void accept(Long key, NeudArbre value) {

@@ -181,9 +181,16 @@ public class SqlArbre {
 				int niveau = rs.getInt(3);
 				boolean feuille = rs.getBoolean(4);
 				neud.set(factory.getNeudArbreBD(null, null, feuille, explorable, id, calculer, niveau));
+				
 			}
 		};
-		return neud.get();
+		//TODO ici pour faire des tests rechargement complet du neud
+		NeudArbre result=neud.get();
+		if (result!=null) {
+		result.getParent();
+		result.getEnfant();
+		}
+		return result;
 	}
 
 	/**

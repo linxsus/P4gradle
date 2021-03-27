@@ -297,12 +297,12 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 				+ ", id=" + id + ", calculer=" + calculer + ", niveau=" + niveau + "]\n"+new GestIdDonneeLong(factory).getDonneeId(id);
 		str+="parent \n";
 		for (Long temp : getParent()) {
-			str+=new GestIdDonneeLong(factory).getDonneeId(temp);
+			str+=new GestIdDonneeLong(factory).getDonneeId(temp)+" "+temp+"\n";
 
 		}
 		str+="enfent \n";
 		for (Long temp : getEnfant()) {
-			str+=new GestIdDonneeLong(factory).getDonneeId(temp);
+			str+=new GestIdDonneeLong(factory).getDonneeId(temp)+" "+temp+"\n";
 
 		}
 		

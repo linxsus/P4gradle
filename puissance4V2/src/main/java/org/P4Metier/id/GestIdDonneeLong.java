@@ -5,6 +5,8 @@ import org.P4Metier.Factory.Factory;
 import org.P4Modele_.GestDonnee;
 
 /**
+ * class pour le calul de l'id en un long
+ * 
  * id=|nbPionColonne[0]|couleur pion[0][0]|couleur pion[0][1]|...|nbPionColonne[6]|couleur pion[6][0]|couleur pion[6][1]
  *
  * ou autre façon de le voire
@@ -25,22 +27,22 @@ import org.P4Modele_.GestDonnee;
  * tableau[0][6]*2*<br>
  *
  * on utilise aussi l'effet miroire
+ * 
+ * @see GestIdDonnee
  *
- * @author Xavier Gouraud
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
  *
  */
 public class GestIdDonneeLong implements GestIdDonnee<Long> {
-	/**
-	 * id jeux normal et id jeux miroire a la suite<br>
-	 *
-	 */
-	// private Long[] idBaseDonnee=new Long[2];
-
+	
 	/**
 	 * object GestBaseDonnee pour faire le pseudo heritage
 	 */
 	protected GestDonnee baseDonnee;
 
+	/**
+	 *  le factory 
+	 */
 	protected Factory factory;
 
 	/**
@@ -52,8 +54,15 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 		baseDonnee = factory.getGestBaseDonnee();
 	}
 
-	public GestIdDonneeLong(GestDonnee donneeId) {
+	/**
+	 * constructeur avec comme parametre un gestDonnee deja d'initialiser
+	 * 
+	 * @param donneeId un gestDonnee deja d'initialiser
+	 * @param factory le factory pour cree des object
+	 */
+	public GestIdDonneeLong(GestDonnee donneeId,Factory factory) {
 		super();
+		this.factory = factory;
 		baseDonnee = donneeId;
 	}
 
@@ -67,6 +76,11 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 		return resultat[1];
 	}
 
+	/**
+	 * recalcul complet de l'id. utile en cas d'import
+	 * 
+	 * @return le tableau des 2 id normal et inverser (2 long)
+	 */
 	protected long[] getIdBaseDonneeTab() {
 		long[] resultat = new long[2];
 		resultat[0] = 0L;
@@ -113,6 +127,8 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 		Long resultat1 = 0L;
 		Long resultat2 = 0L;
 		int hauteur = 0;
+		//calcul de l'id normal
+		
 		// pour toute les colonne
 		for (int i = 0; i < LARGEUR; i++) {
 			// pour tous les pion dans la colonne (et seulement les pion)
@@ -133,6 +149,8 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 			hauteur = 0;
 		}
 
+		//calcul de l'id inverse
+		
 		for (int i = LARGEUR - 1; i >= 0; i--) {
 			// pour tous les pion dans la colonne (et seulement les pion)
 
@@ -147,12 +165,13 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 					hauteur++;
 				}
 			}
-			// je decale pour pouvoir inserrer le nb de pion que j'ai mis
+			// je decale pour pouvoir inserer le nb de pion que j'ai mis
 			resultat2 *= 7;
 			resultat2 += hauteur;
 			hauteur = 0;
 		}
 
+		// je retourn l'id le plus petit 
 		if (resultat1 < resultat2) {
 			return resultat1;
 		}
@@ -198,7 +217,7 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 
 	@Override
 	public GestIdDonnee<Long> newBaseDonneeId(Long id) {
-		return new GestIdDonneeLong(getDonneeId(id));
+		return new GestIdDonneeLong(getDonneeId(id),factory);
 	}
 
 	@Override

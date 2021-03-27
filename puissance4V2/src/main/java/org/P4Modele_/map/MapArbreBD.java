@@ -24,11 +24,22 @@ import org.Persistant_.requette.SqlArbre;
  */
 public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArbre {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// gestion affichage
 	protected static int nbtour = 1;
 	protected static int nbtour1 = 1;
+
+	//TODO a supprimer pour gestion des faux explorable
+	
+//	protected static int neudSupprimer=0;
+//	protected static int neudCalculer=0;
+	
+	
 	// mini 20*SynchronizationBD.NBEXPLORABLEMAX;
-	protected final static int maxEnregistrement = 100 * SynchronizationBD.NBEXPLORABLEMAX;
+	protected final static int maxEnregistrement = 200 * SynchronizationBD.NBEXPLORABLEMAX;
 	protected LinkedList<Long> idsExplorable;
 
 	protected Map<Long, NeudArbre> mapExplorable;
@@ -151,12 +162,21 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 			// tous les 500 explorable
 			if ((nbtour % 500) == 0) {
 				System.out.print(".");
+				
+				//System.out.print("\n neud supprimer : "+ neudSupprimer +" neud calculer : " + neudCalculer);
+				//neudSupprimer=0;
+				//neudCalculer=0;
 			}
 			nbtour++;
 
 			// resinchronisation (on rechage l'explorable et on verifie si c'est toujours un
 			// explorable)
 			neud = get(idsExplorable.pollLast());
+			//TODO a supprimer
+//			if (neud == null) {neudSupprimer++;}
+//			else {
+//			if (!neud.isExplorable()) {neudCalculer++;}}
+			
 		} while ((neud == null) || !neud.isExplorable());
 		return neud;
 	}
@@ -218,6 +238,7 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 		return super.merge(key, value, remappingFunction);
 	}
 
+	//ici on definit que l'element le plus ancien doit etre supprimer si le map depasse maxEnregistrement
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<Long, NeudArbre> eldest) {
 		return size() > (maxEnregistrement);
