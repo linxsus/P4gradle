@@ -11,7 +11,7 @@ public class GestDonneeTabByte implements GestDonnee {
 	protected int nbPionJouer = 0;
 
 	protected int[] nbPionColonne = new int[LARGEUR];
-
+//TODO ici remplacer pour la gestion Quantum
 	protected ByteTableauJoueur[] byteTableauJoueur = new ByteTableauJoueur[2];
 	protected Factory factory;
 
@@ -132,6 +132,7 @@ public class GestDonneeTabByte implements GestDonnee {
 	 * initialisation du tableau dernierJoueur
 	 */
 	protected void init() {
+		//TODO ici a remplacer pour gestion Quantum
 		for (int i = 0; i < byteTableauJoueur.length; i++) {
 			byteTableauJoueur[i] = new ByteTableauJoueur();
 		}

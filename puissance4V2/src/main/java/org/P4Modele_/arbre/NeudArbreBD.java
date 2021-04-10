@@ -182,4 +182,10 @@ public class NeudArbreBD extends NeudArbreBasic {
 	public void setMapArbre(MapArbreBD mapArbreBD) {
 		this.mapArbre = mapArbreBD;
 	}
+	
+	@Override
+	public void setQuantum(int quantum) {
+		super.setQuantum(quantum);
+		mapArbre.Update(id, this);
+	}
 }

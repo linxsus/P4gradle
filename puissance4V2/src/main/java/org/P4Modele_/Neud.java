@@ -3,7 +3,20 @@ package org.P4Modele_;
 import java.util.Set;
 
 public interface Neud {
+	
+	/**
+	 * enregistre le Quantum
+	 */
 
+	void setQuantum(int quantum);
+	
+	/**
+	 * 
+	 * @return le quantum
+	 */
+	
+	int getQunatum();
+	
 	/**
 	 * @return the id
 	 */
