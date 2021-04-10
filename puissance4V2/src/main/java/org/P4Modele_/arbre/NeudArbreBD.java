@@ -203,4 +203,9 @@ public class NeudArbreBD extends NeudArbreBasic {
 	}
 	
 	
+	@Override
+	public void setQuantum(int quantum) {
+		super.setQuantum(quantum);
+		mapArbre.Update(id, this);
+	}
 }

@@ -27,6 +27,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	protected long id;
 	protected Calculer calculer = Calculer.NONCALCULER;
 	protected int niveau;
+	protected int quantum;
 	protected Factory factory;
 	/**
 	 * cree un neud
@@ -461,5 +462,13 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		return false;
 	}
 	
-	
+	public void setQuantum(int quantum) {
+		this.quantum=quantum;
+		
+	}
+
+	@Override
+	public int getQunatum() {
+		return quantum;
+	}
 }

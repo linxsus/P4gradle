@@ -12,9 +12,6 @@ import org.P4Modele_.jeux.ByteTableauJoueur;
  */
 public class GagneeTabByte implements Gagnee {
 
-	private int hauteur = 0;
-	private int colonne;
-	private ByteTableauJoueur byteTableauJoueur;
 	protected Factory factory;
 
 	public GagneeTabByte(Factory factory) {
@@ -26,9 +23,9 @@ public class GagneeTabByte implements Gagnee {
 	@Override
 	public boolean isGagnee(GestDonnee donnee) {
 
-		byteTableauJoueur = donnee.getByteTableauJoueur();
-		this.colonne = donnee.getDernierJouer();
-		hauteur = donnee.getNbPionColonne(colonne);
+		ByteTableauJoueur byteTableauJoueur = donnee.getByteTableauJoueur();
+		int colonne = donnee.getDernierJouer();
+		int hauteur = donnee.getNbPionColonne(colonne);
 		int gagnee = 0;
 		byte test;
 		test = byteTableauJoueur.getHauteur(hauteur - 1, colonne);

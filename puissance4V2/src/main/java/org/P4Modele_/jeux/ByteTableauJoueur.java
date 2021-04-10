@@ -19,7 +19,7 @@ public class ByteTableauJoueur {
 	// hauteur)
 	// + LARGEUR - 3 (nb de cas impossible pour avoir 4 pion successif en largeur)
 	// -1 pour enlever le cas du coin qui est en double.
-	private final static int NB_COLONNE_DIAGONALE = ((((GestDonnee.HAUTEUR - 3) + GestDonnee.LARGEUR) - 3) - 1);
+	protected final static int NB_COLONNE_DIAGONALE = ((((GestDonnee.HAUTEUR - 3) + GestDonnee.LARGEUR) - 3) - 1);
 	/**
 	 * decalage du pion en 0,0 a effectuer pour une diagonal vers le haut
 	 */
@@ -28,7 +28,7 @@ public class ByteTableauJoueur {
 	// le pion (0,0) peut faire partie d'une combinaison
 	// gagnante et les pion au dessu de lui aussi jusqu'a hauteur_max-4
 	// donc on doit le decaler de 0+hauteur_max-4
-	private final static int DECALAGE_HAUT = (GestDonnee.HAUTEUR - 4);
+	protected final static int DECALAGE_HAUT = (GestDonnee.HAUTEUR - 4);
 	/**
 	 * decalage du pion en 0,0 a effectuer pour une diagonal vers le bas
 	 */
@@ -37,7 +37,7 @@ public class ByteTableauJoueur {
 	// le pion (0,0) ne fait pas partie d'une combinaison
 	// gagnante et il faut le decale de 3 sur la droite pour qu'il puisse gangee
 	// donc on doit le decaler de 0-3
-	private final static int DECALAGE_BAS = -3;
+	protected final static int DECALAGE_BAS = -3;
 
 	/**
 	 * tableau de byte des colonne

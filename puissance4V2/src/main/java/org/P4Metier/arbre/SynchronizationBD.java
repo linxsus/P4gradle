@@ -166,7 +166,7 @@ public class SynchronizationBD {
 	 * @param Tampon
 	 */
 	protected void affichage(int niveau, TamponBD Tampon) {
-		if (tampon.getEditNeud().size()>0) {
+		//if (tampon.getEditNeud().size()>0) {
 		long fin = System.currentTimeMillis();
 		System.out.println();
 		long resultat = 0;
@@ -186,7 +186,7 @@ public class SynchronizationBD {
 //			}
 //		}
 		debut = fin;}
-	}
+	//}
 
 	/**
 	 * sauvegarde de copy tampon
