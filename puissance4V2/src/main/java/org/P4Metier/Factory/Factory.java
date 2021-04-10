@@ -83,6 +83,7 @@ public class Factory {
 		this.idLong = idLong;
 		this.tabByte = tabByte;
 		this.gagneeTabByte = gagneeTabByte;
+		factory=this;
 	}
 
 	/**
@@ -249,13 +250,18 @@ public class Factory {
 	 * @param niveau
 	 * @return
 	 */
-	public NeudArbre getNeudArbreBD(Set<Long> parent, Set<Long> enfant, boolean feuille, boolean explorable, long id,
+	public NeudArbre getNeudArbreBD(Set<Long> parent, Set<Long> enfant, int etat, long id,
 			Calculer calculer, int niveau) {
 		if (BD) {
-			return new NeudArbreBD(this, parent, enfant, feuille, explorable, id, calculer, niveau);
+			return new NeudArbreBD(this, parent, enfant, etat, id, calculer, niveau);
 		}
 		return null;
 	}
+
+	/**
+	 * il n'y a qu'un seul object mysqlconnexion par factory
+	 */
+	protected MapArbre mapArbre = null;
 
 	/**
 	 * creation d'un MapArbre pour ordinateurArbre
@@ -263,10 +269,16 @@ public class Factory {
 	 * @return
 	 */
 	public MapArbre getMapArbre() {
-		if (BD) {
-			return new MapArbreBD(this);
+		if (mapArbre == null) {
+
+			if (BD) {
+
+				mapArbre = new MapArbreBD(this);
+			} else {
+				mapArbre = new MapArbreBasic();
+			}
 		}
-		return new MapArbreBasic();
+		return mapArbre;
 	}
 
 	/**
@@ -345,12 +357,20 @@ public class Factory {
 	}
 
 	/**
+	 * il n'y a qu'un seul object tampon par factory
+	 */
+	protected SynchronizationBD synchronizationBD = null;
+	
+	/**
 	 * creation d'u object de synchronisation entre la base et le mapArbre
 	 *
 	 * @return
 	 */
 	public SynchronizationBD getSynchronizationBD() {
-		return new SynchronizationBD(this);
+		if (synchronizationBD == null) {
+			synchronizationBD = new SynchronizationBD(this);
+		}
+		return synchronizationBD;
 	}
 
 	// TODO a ameliorer car il devrait renvoyer soit map soit
@@ -373,4 +393,18 @@ public class Factory {
 	public CopyTampon getCopyTampon() {
 		return new CopyTampon(tampon);
 	}
+	
+	static private Factory factory;
+
+	/**
+	 * @return the factory
+	 */
+	static public Factory getFactory() {
+		return factory;
+	}
+	
+	static public void setFactory(Factory temp) {
+	   factory=temp;
+	}
+	
 }

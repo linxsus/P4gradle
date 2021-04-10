@@ -2,6 +2,16 @@ package org.P4Metier;
 
 import org.P4Modele_.GestDonnee;
 
+/**
+ * interface pour les class gagnee<br>
+ * <br>
+ * class implementant cette interface<br>
+ * {@link GagneeTabByte}<br>
+ * {@link GagneeTabInt}<br>
+ * 
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
+ *
+ */
 public interface Gagnee {
 
 	/**

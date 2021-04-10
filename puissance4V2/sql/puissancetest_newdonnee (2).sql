@@ -74,9 +74,8 @@ DROP TABLE IF EXISTS `lien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `lien` (
-  `parent` bigint NOT NULL,
-  `enfant` bigint NOT NULL,
-  `colonne` int DEFAULT NULL,
+  `parent` bigint unsigned NOT NULL,
+  `enfant` bigint unsigned NOT NULL,
   UNIQUE KEY `id` (`parent`,`enfant`),
   KEY `idparent` (`parent`),
   KEY `idenfant` (`enfant`)
@@ -97,7 +96,8 @@ CREATE TABLE `neud` (
   `niveau` tinyint(1) DEFAULT NULL,
   `feuille` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`idneud`),
-  UNIQUE KEY `idneud_UNIQUE` (`idneud`)
+  UNIQUE KEY `idneud_UNIQUE` (`idneud`),
+  KEY `idexplorable` (`niveau`,`explorable`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -191,7 +191,6 @@ DROP TABLE IF EXISTS `lien`;
 CREATE TABLE `lien` (
   `parent` bigint NOT NULL,
   `enfant` bigint NOT NULL,
-  `colonne` int DEFAULT NULL,
   UNIQUE KEY `id` (`parent`,`enfant`),
   KEY `idparent` (`parent`),
   KEY `idenfant` (`enfant`)
@@ -212,7 +211,8 @@ CREATE TABLE `neud` (
   `niveau` tinyint(1) DEFAULT NULL,
   `feuille` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`idneud`),
-  UNIQUE KEY `idneud_UNIQUE` (`idneud`)
+  UNIQUE KEY `idneud_UNIQUE` (`idneud`),
+  KEY `idexplorable` (`niveau`,`explorable`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

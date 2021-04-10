@@ -18,9 +18,7 @@ public class ArbreBasic implements Arbre {
 
 	protected MapArbre tableau;//TODO = new MapArbreBasic();
 	protected long tron = -1L;
-	private List<Long> neudSuprimable = new ArrayList<>();
-
-	private List<Long[]> lienSuprimable = new ArrayList<>();
+	//private List<Long[]> lienSuprimable = new ArrayList<>();
 	protected Factory factory;
 
 	public ArbreBasic(Factory factory) {
@@ -70,6 +68,7 @@ public class ArbreBasic implements Arbre {
 	protected Neud setTron(long tron, NeudArbre neud, int niveau) {
 		if (neud == null) {
 			neud = factory.getNeudArbre(tron, niveau);
+			neud.setTron(true);
 		}
 		if ((tron != -1)) {
 			tableau.clear();// TODO un peut violent a voir si pas possible de faire mieux
@@ -121,7 +120,7 @@ public class ArbreBasic implements Arbre {
 	@Override
 	public void setCalculer(Long idCalculer, Calculer calculer) {
 		setCalculerPrivate(idCalculer, calculer);
-		netoyage();
+		//netoyage();
 	}
 
 	/**
@@ -181,46 +180,46 @@ public class ArbreBasic implements Arbre {
 		return feuilleEnfant;
 	}
 
-	/**
-	 * netoyage de l'arbre
-	 *
-	 */
-	protected void netoyage() {
-		List<Long> totalSuprimable = new ArrayList<>();
-
-		while (!neudSuprimable.isEmpty()) {
-			// pour tous les neud suprimable
-			for (Long id : neudSuprimable) {
-				// je marque tous ses lien comme suprimable
-				suprimableLien(id);
-			}
-			// je sauvegarde les neud suprimable
-			totalSuprimable.addAll(neudSuprimable);
-			neudSuprimable.clear();
-			// pour tous les lien de la table lienSuprimable
-			for (Long[] lien : lienSuprimable) {
-				// je suprime le lien
-				removeLien(lien[0], lien[1]);
-				// si l'enfant n'a plus de parent
-				if ((tableau.get(lien[1]).getParent().size() == 0)) {
-					// je met l'enfant dans les neud suprimable
-					neudSuprimable.add(lien[1]);
-				}
-			}
-			// je vide les lien suprimable
-			lienSuprimable.clear();
-
-			// si il y a des neud suprimable
-			// (nouveau neud suprimable suite a la mise en suprimable des lien)
-			// je reboucle
-		}
-
-		// je suprime tous les neud inutile
-		for (Long id : totalSuprimable) {
-			tableau.remove(id);
-		}
-
-	}
+//	/**
+//	 * netoyage de l'arbre
+//	 *
+//	 */
+//	protected void netoyage() {
+//		List<Long> totalSuprimable = new ArrayList<>();
+//
+//		while (!neudSuprimable.isEmpty()) {
+//			// pour tous les neud suprimable
+//			for (Long id : neudSuprimable) {
+//				// je marque tous ses lien comme suprimable
+//				suprimableLien(id);
+//			}
+//			// je sauvegarde les neud suprimable
+//			totalSuprimable.addAll(neudSuprimable);
+//			neudSuprimable.clear();
+//			// pour tous les lien de la table lienSuprimable
+//			for (Long[] lien : lienSuprimable) {
+//				// je suprime le lien
+//				removeLien(lien[0], lien[1]);
+//				// si l'enfant n'a plus de parent
+//				if ((tableau.get(lien[1]).getParent().size() == 0)) {
+//					// je met l'enfant dans les neud suprimable
+//					neudSuprimable.add(lien[1]);
+//				}
+//			}
+//			// je vide les lien suprimable
+//			lienSuprimable.clear();
+//
+//			// si il y a des neud suprimable
+//			// (nouveau neud suprimable suite a la mise en suprimable des lien)
+//			// je reboucle
+//		}
+//
+//		// je suprime tous les neud inutile
+//		for (Long id : totalSuprimable) {
+//			tableau.remove(id);
+//		}
+//
+//	}
 
 	/**
 	 * si on peut calculer le param on le fait et on affecte le param
@@ -298,54 +297,55 @@ public class ArbreBasic implements Arbre {
 
 	}
 
-	/***
-	 * on verifie si il y a des lien enfant suprimable et on marque ces lien en
-	 * suprimable
-	 *
-	 * @param id
-	 *            l'id des enfant a verifier
-	 */
-	protected void suprimableLien(Long id) {
-		// pour tous les enfant de l'id
-		Neud curent = tableau.get(id);
-		for (long enfant : curent.getEnfant()) {
+//	/***
+//	 * on verifie si il y a des lien enfant suprimable et on marque ces lien en
+//	 * suprimable
+//	 *
+//	 * @param id
+//	 *            l'id des enfant a verifier
+//	 */
+//	protected void suprimableLien(Long id) {
+//		// pour tous les enfant de l'id
+//		Neud curent = tableau.get(id);
+//		for (long enfant : curent.getEnfant()) {
+//
+//			// je cree une image du lien
+//			Long[] lien = new Long[2];
+//			lien[0] = id;
+//			lien[1] = enfant;
+//			// je le met dans la table des lien a supprimer
+//			lienSuprimable.add(lien);
+//		}
+//		//TODO ???? n'a pas vrament de sens puisqu,on le fait avec le parent
+//		for (long parent : curent.getParent()) {
+//			{
+//				// je cree une image du lien
+//				Long[] lien = new Long[2];
+//				lien[0] = parent;
+//				lien[1] = id;
+//				// je le met dans la table des lien a supprimer
+//				lienSuprimable.add(lien);
+//			}
+//		}
+//
+//	}
 
-			// je cree une image du lien
-			Long[] lien = new Long[2];
-			lien[0] = id;
-			lien[1] = enfant;
-			// je le met dans la table des lien a supprimer
-			lienSuprimable.add(lien);
-		}
-		for (long parent : curent.getParent()) {
-			{
-				// je cree une image du lien
-				Long[] lien = new Long[2];
-				lien[0] = parent;
-				lien[1] = id;
-				// je le met dans la table des lien a supprimer
-				lienSuprimable.add(lien);
-			}
-		}
-
-	}
-
-	/**
-	 * suppresion effective du lien parent enfant fournis en parametre
-	 *
-	 * @param parent
-	 *            le parent
-	 * @param enfant
-	 *            l'enfant
-	 */
-	protected void removeLien(long parent, long enfant) {
-		// recuperation des feuilles parent et enfant on espere qu'elle existe sinon le
-		// programe sortira une erreur
-		NeudArbre feuilleParent = tableau.get(parent);
-		NeudArbre feuilleEnfant = tableau.get(enfant);
-		feuilleParent.removeEnfant(enfant);
-		feuilleEnfant.removeParent(parent);
-	}
+//	/**
+//	 * suppresion effective du lien parent enfant fournis en parametre
+//	 *
+//	 * @param parent
+//	 *            le parent
+//	 * @param enfant
+//	 *            l'enfant
+//	 */
+//	protected void removeLien(long parent, long enfant) {
+//		// recuperation des feuilles parent et enfant on espere qu'elle existe sinon le
+//		// programe sortira une erreur
+//		NeudArbre feuilleParent = tableau.get(parent);
+//		NeudArbre feuilleEnfant = tableau.get(enfant);
+//		feuilleParent.removeEnfant(enfant);
+//		feuilleEnfant.removeParent(parent);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -367,7 +367,6 @@ public class ArbreBasic implements Arbre {
 	 */
 	public boolean neudSuprimable(Long id) {
 		Neud courant = tableau.get(id);
-		boolean suprimable = true;
 		// si le neud(id) n'est pas calculer
 		if (courant.getCalculer() == Calculer.NONCALCULER) {
 			// un des parent
@@ -375,20 +374,17 @@ public class ArbreBasic implements Arbre {
 				// est non calculer
 				if (tableau.get(parent).getCalculer() == Calculer.NONCALCULER) {
 					// l'id n'est pas suprimable
-					suprimable = false;
+					return false;
 				}
 			}
 		}
 		// neud calculer
 		else {
 			// on ne le suprime pas
-			suprimable = false;
+			return false;
 		}
-		// affectation reel dans le tableau suprimable
-		if (suprimable) {
-			neudSuprimable.add(id);
-		}
-		return suprimable;
+//		courant.setSupprimable(true);
+		return true;
 	}
 
 	/**
@@ -398,16 +394,11 @@ public class ArbreBasic implements Arbre {
 	 *            id du neud sur le quelle travailler
 	 */
 	protected void enfantSuprimable(Long id) {
-		Set<Long> tabEnfant=new HashSet<Long>();
 		for (Long enfant : tableau.get(id).getEnfant()) {
-			if (!neudSuprimable(enfant) &&(tableau.get(enfant).getCalculer()==Calculer.NONCALCULER))
+			if (neudSuprimable(enfant) || (tableau.get(enfant).getCalculer()==Calculer.NONCALCULER))
 			{
 				tableau.get(enfant).removeParent(id);
-				tabEnfant.add(enfant);
 			};
-		}
-		for (Long enfant : tabEnfant) {
-			tableau.get(id).removeEnfant(enfant);
 		}
 	}
 

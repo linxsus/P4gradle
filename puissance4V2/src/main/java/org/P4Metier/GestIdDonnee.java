@@ -4,16 +4,26 @@ import org.P4Modele_.GestDonnee;
 import org.P4Modele_.jeux.ByteTableauJoueur;
 
 /**
- * n'est pas reelement un extends GestDonneeBase mais se comporte comme si.<br>
  *
  * ajout des fonctionnaliter pour de gestion d'un id<br>
- * et d'import et export.
- *
+ * et d'import et export.<br>
+ *<br>
+ * n'est pas reelement un extends GestDonneeBase mais se comporte comme si. voir.<br>
+ * {@link #getBaseDonnee}<br>
+ * <br>
+ * class implemantant cette interface<br>
+ * {@link GestIdDonneeInt3}<br>
+ * {@link GestIdDonneeLong}<br>
+ * {@link GestIdDonneeLongTabByte}<br>
+ * 
  * @see GestDonnee
+ * 
+ * @param <T> format de l'id
  *
- * @author Xavier Gouraud
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
  *
  */
+
 public interface GestIdDonnee<T> extends GestDonnee {
 
 	/**
@@ -58,8 +68,9 @@ public interface GestIdDonnee<T> extends GestDonnee {
 	abstract public boolean isMiroire();
 
 	/**
-	 * retourne la GestBaseDonnee utiliser. mise en public pour pouvoir l'utiliser
-	 * dans l'interface et simplifier la programation et retomber sur un pseudo
+	 * retourne la GestBaseDonnee utiliser. 
+	 * mise en public pour pouvoir l'utiliser dans l'interface 
+	 * et simplifier la programation et retomber sur un pseudo
 	 * heritage
 	 *
 	 * @return retourne la GestBaseDonnee utiliser
@@ -101,7 +112,8 @@ public interface GestIdDonnee<T> extends GestDonnee {
 	abstract public T getIdBaseDonnee();
 
 	/**
-	 * retourne l'id
+	 * retourne l'id du tableau passer en parametre
+	 * @see#getIdBaseDonnee()
 	 *
 	 * @param tableau
 	 *            tableau sous forme [hauteur][largeur] du jeux
@@ -116,6 +128,8 @@ public interface GestIdDonnee<T> extends GestDonnee {
 	 * @param id
 	 *            id de la GestBaseDonnee a recuperer
 	 * @return GestBaseDonnee generer
+	 * 
+	 * @see GestDonnee
 	 */
 	abstract public GestDonnee getDonneeId(T id);
 

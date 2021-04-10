@@ -1,9 +1,8 @@
 package org.P4Metier.ordi;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
+
 import java.util.Random;
-import java.util.Set;
+
 
 import org.P4Metier.Gagnee;
 import org.P4Metier.GestIdDonnee;
@@ -118,18 +117,22 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 					ok=true;
 				}
 				if (arbre.getNeud(tron).getCalculer()!=Calculer.NONCALCULER) {
+					next = arbre.nextExplorable(niveau);
 					ok=true;
 				}
 			} else {
+				
+				//System.out.print(" "+next.getId());
+				
 				//TODO next.getId() puis donneeTravaille.getIdBaseDonnee() pourquoi recalculer l'id??
 				// je recupere le neud de travaille
 				donneeTravaille = donnee.newBaseDonneeId(next.getId());
 				idParent = donneeTravaille.getIdBaseDonnee();
 				// pour toute les possibilter du neud
 				int[] colonnes = donneeTravaille.getColoneJouable();
-				boolean nonGagner = true;
+				boolean Gagner = false;
 				//TODO il faut enlever le && nonGagner pour devalider les autre possibiliter
-				for (int i = 0; (i < colonnes.length) && nonGagner; i++) {
+				for (int i = 0; (i < colonnes.length) && !Gagner; i++) {
 					// j'ajoute le pion
 					donneeTravaille.ajoutPion(colonnes[i] + 1);
 					idEnfant = donneeTravaille.getIdBaseDonnee();
@@ -144,7 +147,7 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 					if ((enfant.getCalculer() == Calculer.GAGNER) || gagnee.isGagnee(donneeTravaille)) {
 						arbre.setCalculer(idEnfant, Calculer.GAGNER);
 						// j'ai gagner inutil de calculer les autre possibilité.
-						nonGagner = false;
+						Gagner = true;
 					}
 					donneeTravaille.enleverPion();
 				}
@@ -289,11 +292,11 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 			// je decale pour pouvoir lire l'info suivante
 			l1 /= 7;
 			l2 /= 7;
-			if (nbPionColone1[i]>0) {
-				l1 /= 2*nbPionColone1[i];
+			for (int j = 0; j < nbPionColone1[i]; j++) {
+				l1 /= 2;
 			}
-			if (nbPionColone2[i]>0) {
-				l2 /= 2*nbPionColone2[i];
+			for (int j = 0; j < nbPionColone2[i]; j++) {
+				l2 /= 2;
 			}
 		}
 		int colDif=0;

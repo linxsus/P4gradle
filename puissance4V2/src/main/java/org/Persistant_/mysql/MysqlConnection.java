@@ -1,13 +1,13 @@
 package org.Persistant_.mysql;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
+
 import java.sql.SQLException;
-import java.sql.Statement;
+
 import java.util.concurrent.TimeUnit;
 
 public class MysqlConnection {
-	private static String url = "jdbc:mysql://localhost/puissance4?autoReconnect=true&useSSL=false";
+	private static String url = "jdbc:mariadb://localhost/puissance4V3?autoReconnect=true&useSSL=false";
 	private static String login = "Puissance4";
 	private static String passwd = "p4C@llans";
 	private static Connection cn = null;
@@ -18,7 +18,6 @@ public class MysqlConnection {
 	private void init() {
 		if (cn == null) {
 			try {
-				Class.forName("com.mysql.cj.jdbc.Driver");// Etape 1 : Chargement du driver
 				cn = new XGConnection(url,login,passwd);  // Etape 2 : r�cup�ration de la connexion
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -33,8 +32,6 @@ public class MysqlConnection {
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 	}

@@ -28,6 +28,7 @@ public class PF {
 	 *            arguments que l'on veut transmetre a la fonction
 	 * @return retourne le resultat que lui a renvoyer la fonction
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Object privateFonction(Object object, String name, Object... args) {
 		Object resultat = null;
 		try {

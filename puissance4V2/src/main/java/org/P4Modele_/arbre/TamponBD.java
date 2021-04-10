@@ -6,12 +6,15 @@ package org.P4Modele_.arbre;
 import java.util.Collection;
 import java.util.HashSet;
 
+//import org.P4Metier.Factory.Factory;
 import org.P4Metier.arbre.SynchronizationBD;
 import org.P4Modele_.GestDonnee;
 import org.P4Modele_.Neud;
 
 /**
- * @author Xavier Gouraud
+ * 
+ * 
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
  *
  */
 
@@ -26,14 +29,14 @@ public class TamponBD {
 	private Collection<Long> removeNeud = new HashSet<>(SynchronizationBD.NBEXPLORABLEMAX / 3);
 
 	private Collection<Neud> editNeud = new HashSet<>(SynchronizationBD.NBEXPLORABLEMAX);
-	private Collection<Lien> newLien = new HashSet<>(maxEnregistrement);
-	private Collection<Lien> removeLien = new HashSet<>(maxEnregistrement / 3);
+//	private Collection<Lien> newLien = new HashSet<>(maxEnregistrement);
+//	private Collection<Lien> removeLien = new HashSet<>(maxEnregistrement / 3);
 
 	/**
 	 * trace des neud de lancienne demande des neud suprimable permet 2 lecture
 	 * getRemoveNeud() avant que isSupprimable renvoie false
 	 */
-	private Collection<Long> removeNeudAncien = new HashSet<>(1000);
+	//private Collection<Long> removeNeudAncien = new HashSet<>(1000);
 
 	/**
 	 * ajoute un nouveau neud au tampon
@@ -42,15 +45,6 @@ public class TamponBD {
 	 *            neud a ajouter
 	 */
 	public void addNeud(Neud neud) {
-		//TODO ici modif
-		//boolean ok=true;
-		/*
-		if (removeNeud.contains(neud.getId())) {
-			System.out.println("removeNeud "+neud.getId());
-		}
-		if (removeNeudAncien.contains(neud.getId())) {
-			System.out.println("removeNeudAncien "+neud.getId());
-		}*/
 		newNeud.add(neud);
 	}
 
@@ -65,33 +59,33 @@ public class TamponBD {
 		}
 	}
 
-	/**
-	 * ajout un nouveau lien entre parent et enfant au tampon
-	 *
-	 * @param parent
-	 *            parent
-	 * @param enfant
-	 *            enfant
-	 */
-	public void newLien(long parent, long enfant) {
-		newLien.add(new Lien(parent, enfant));
-	}
+//	/**
+//	 * ajout un nouveau lien entre parent et enfant au tampon
+//	 *
+//	 * @param parent
+//	 *            parent
+//	 * @param enfant
+//	 *            enfant
+//	 */
+//	public void newLien(long parent, long enfant) {
+//		newLien.add(new Lien(parent, enfant));
+//	}
 
-	/**
-	 * ajout un lien a supprimer au tampon
-	 *
-	 * @param parent
-	 *            parent
-	 * @param enfant
-	 *            enfant
-	 */
-	public void removeLien(Long parent, Long enfant) {
-		Lien lien = new Lien(parent, enfant);
-		if (!newLien.remove(lien)) {
-			removeLien.add(lien);
-			// ici on ajoute dans le total modif cat c'est une modif d'un neud
-		}
-	}
+//	/**
+//	 * ajout un lien a supprimer au tampon
+//	 *
+//	 * @param parent
+//	 *            parent
+//	 * @param enfant
+//	 *            enfant
+//	 */
+//	public void removeLien(Long parent, Long enfant) {
+//		Lien lien = new Lien(parent, enfant);
+//		if (!newLien.remove(lien)) {
+//			removeLien.add(lien);
+//			// ici on ajoute dans le total modif cat c'est une modif d'un neud
+//		}
+//	}
 
 	/**
 	 * ajout un neud a supprimer au tampon
@@ -103,6 +97,11 @@ public class TamponBD {
 		Long neudId = neud.getId();
 		if (!newNeud.remove(neud)) {
 			removeNeud.add(neudId);
+			//System.out.println("neud suprimable"+removeNeud.size());
+//			if (removeNeud.size()>1000) {
+//				System.out.println("test");
+//				Factory.getFactory().getSynchronizationBD().synchronization(35);
+//			}
 		}
 		// ici pas d'ajout dans neudTotalModif car suppression
 		// mais il faut bien pensser avant une lecture en base a exlure ces
@@ -121,9 +120,9 @@ public class TamponBD {
 	/**
 	 * @return the removeNeudAncien
 	 */
-	public Collection<Long> getRemoveNeudAncien() {
-		return removeNeudAncien;
-	}
+//	public Collection<Long> getRemoveNeudAncien() {
+//		return removeNeudAncien;
+//	}
 
 	// public boolean isRemoveLien(long parent, long enfant) {
 	// boolean result = newLien.contains(new Lien(parent, enfant));
@@ -132,14 +131,14 @@ public class TamponBD {
 	// return result;
 	// }
 
-	/**
-	 * retourne les lien a suprimer qui sont dans le tampon.<br>
-	 *
-	 * @return lien a supprimer
-	 */
-	public Collection<Lien> getRemoveLien() {
-		return removeLien;
-	}
+//	/**
+//	 * retourne les lien a suprimer qui sont dans le tampon.<br>
+//	 *
+//	 * @return lien a supprimer
+//	 */
+//	public Collection<Lien> getRemoveLien() {
+//		return removeLien;
+//	}
 
 	/**
 	 * retourne les neud a ajouter qui sont dans le tampon.<br>
@@ -159,14 +158,14 @@ public class TamponBD {
 		return editNeud;
 	}
 
-	/**
-	 * retourne les nouveau lien qui sont dans le tampon.<br>
-	 *
-	 * @return lien a ajouter
-	 */
-	public Collection<Lien> getNewLien() {
-		return newLien;
-	}
+//	/**
+//	 * retourne les nouveau lien qui sont dans le tampon.<br>
+//	 *
+//	 * @return lien a ajouter
+//	 */
+//	public Collection<Lien> getNewLien() {
+//		return newLien;
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -175,9 +174,8 @@ public class TamponBD {
 	 */
 	@Override
 	public String toString() {
-		return "TamponBD [newNeud=" + newNeud.size() + ", removeNeud=" + removeNeud.size() + ", editNeud="
-				+ editNeud.size() + ", newLien=" + newLien.size() + ", removeLien=" + removeLien.size()
-				+ ", removeNeudAncien=" + removeNeudAncien.size() + "]";
+		return "TamponBD [newNeud=" + newNeud.size() +  ", editNeud="
+				+ editNeud.size() + ", newLien=" + "]";
 	}
 
 	/**
@@ -204,35 +202,35 @@ public class TamponBD {
 		this.editNeud = new HashSet<>(10000);
 	}
 
-	/**
-	 * @param newLien
-	 *            the newLien to set
-	 */
-	public void initNewLien() {
-		this.newLien = new HashSet<>(60000);
-	}
+//	/**
+//	 * @param newLien
+//	 *            the newLien to set
+//	 */
+//	public void initNewLien() {
+//		this.newLien = new HashSet<>(60000);
+//	}
 
-	/**
-	 * @param removeLien
-	 *            the removeLien to set
-	 */
-	public void initRemoveLien() {
-		this.removeLien = new HashSet<>(5000);
-	}
+//	/**
+//	 * @param removeLien
+//	 *            the removeLien to set
+//	 */
+//	public void initRemoveLien() {
+//		this.removeLien = new HashSet<>();
+//	}
 
 	/**
 	 * @param removeNeudAncien
 	 *            the removeNeudAncien to set
 	 */
-	public void setRemoveNeudAncien(HashSet<Long> removeNeudAncien) {
-		this.removeNeudAncien = removeNeudAncien;
-	}
+//	public void setRemoveNeudAncien(HashSet<Long> removeNeudAncien) {
+//		this.removeNeudAncien = removeNeudAncien;
+//	}
 
-	public boolean isSupprimable(long id) {
-		boolean result = removeNeud.contains(id);
-		if (result == false) {
-			result = removeNeudAncien.contains(id);
-		}
-		return result;
-	}
+//	public boolean isSupprimable(long id) {
+//		boolean result = removeNeud.contains(id);
+//		if (result == false) {
+//			result = removeNeudAncien.contains(id);
+//		}
+//		return result;
+//	}
 }

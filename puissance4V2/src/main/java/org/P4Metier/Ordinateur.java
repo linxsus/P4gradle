@@ -1,5 +1,15 @@
 package org.P4Metier;
 
+/**
+ * Ordinateur qui permet de savoir sur quelle colonne il est le plus interessant de jouer<br>
+ * {@link #jouer(GestIdDonnee)} retourne la colonne a jouer pour le jeux fourni en parametre<br>
+ * {@link #jouer()} retourne la colonne a jouer pour le jeux en cours<br>
+ * {@link #setTourMax} definit la profondeur de recherche de l'ordinateur.<br>
+ * 
+ * @author  <a href="mailto:xavier.gouraud@wanadoo.fr">xavier</a> 
+ *
+ * @param <T> format de l'Id
+ */
 public interface Ordinateur<T> {
 
 	/**
@@ -19,7 +29,12 @@ public interface Ordinateur<T> {
 	 */
 	public int jouer();
 	
-	//TODO
+	
+	/**
+	 * definit la profondeur de recherche de l'ordinateur
+	 * 
+	 * @param nbtour
+	 */
 	public void setTourMax(int nbtour);
 
 }

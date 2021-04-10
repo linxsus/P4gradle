@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.P4Metier.Factory.Factory;
 import org.P4Modele_.Calculer;
@@ -63,14 +64,14 @@ class MysqlArbreTest {
 		collection.add(factory.getNeudArbre(6L, 0));
 		collection.add(factory.getNeudArbre(10L, 0));
 		sqlArbre.saveNeud(collection);
-		HashMap<Long, NeudArbre> resultat = sqlArbre.getExplorable(0, 2);
+		Collection<Long> resultat = sqlArbre.getExplorable(0, 2);
 		Long[] temp = {10L, 6L };
-		assertTrue(Arrays.equals(resultat.keySet().toArray(), temp), "erreur dans le GetExplorable"
-				+ Arrays.toString(resultat.keySet().toArray()) + " au lieux de" + Arrays.toString(temp));
+		assertTrue(Arrays.equals(resultat.toArray(), temp), "erreur dans le GetExplorable"
+				+ Arrays.toString(resultat.toArray()) + " au lieux de" + Arrays.toString(temp));
 		resultat = sqlArbre.getExplorable(0, 10);
 		Long[] temp1 = { 10L, 6L, 4L };
-		assertTrue(Arrays.equals(resultat.keySet().toArray(), temp1), "erreur dans le GetExplorable"
-				+ Arrays.toString(resultat.keySet().toArray()) + " au lieux de " + Arrays.toString(temp1));
+		assertTrue(Arrays.equals(resultat.toArray(), temp1), "erreur dans le GetExplorable"
+				+ Arrays.toString(resultat.toArray()) + " au lieux de " + Arrays.toString(temp1));
 	}
 
 	@Test

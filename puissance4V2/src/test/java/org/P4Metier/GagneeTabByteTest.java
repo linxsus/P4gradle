@@ -30,13 +30,22 @@ public class GagneeTabByteTest implements GagneeTest {
 	@Test
 	public void testTestByte() {
 		Gagnee gagnee = createInstance();
-		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("15")) == 1,
+		//TODO a tester
+		assertTrue((int) PF.privateFonction(gagnee, "test", (Byte) Byte.parseByte("15")) == 1,
 				"x00001111 devrait etre a gagner et est a perdu");
-		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("30")) == 1,
+//		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("15")) == 1,
+//				"x00001111 devrait etre a gagner et est a perdu");
+		assertTrue((int) PF.privateFonction(gagnee, "test", (Byte) Byte.parseByte("30")) == 1,
 				"x00011110 devrait etre a gagner et est a perdu");
-		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("62")) == 1,
+//		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("30")) == 1,
+//				"x00011110 devrait etre a gagner et est a perdu");
+		assertTrue((int) PF.privateFonction(gagnee, "test", (Byte) Byte.parseByte("62")) == 1,
 				"x00111110 devrait etre a gagner et est a perdu");
-		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("14")) != 1,
+//		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("62")) == 1,
+//				"x00111110 devrait etre a gagner et est a perdu");
+		assertTrue((int) PF.privateFonction(gagnee, "test", (Byte) Byte.parseByte("14")) != 1,
 				"x00001110 devrait etre a pedue et est a gagner");
+//		assertTrue((int) PF.privateFonction(gagnee, "test", new Byte("14")) != 1,
+//				"x00001110 devrait etre a pedue et est a gagner");
 	}
 }

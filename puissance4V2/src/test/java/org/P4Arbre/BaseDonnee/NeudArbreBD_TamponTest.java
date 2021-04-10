@@ -44,7 +44,6 @@ class NeudArbreBD_TamponTest implements NeudTest {
 		neudBase.addParent(6L);
 		neudBase.addParent(7L);
 		sqlArbre.removeLien(tampon.getRemoveLien());
-		sqlArbre.removeNeud(tampon.getRemoveNeud());
 		sqlArbre.saveNeud(tampon.getNewNeud());
 		sqlArbre.saveLien(tampon.getNewLien());
 		sqlArbre.editNeud(tampon.getEditNeud());
@@ -193,7 +192,6 @@ class NeudArbreBD_TamponTest implements NeudTest {
 		assertTrue(neud.toString().equals(neudBase.toString()),
 				" erreur" + neud + " n'est pas egale apres un getEnfant " + neudBase);
 		sqlArbre.removeLien(tampon.getRemoveLien());
-		sqlArbre.removeNeud(tampon.getRemoveNeud());
 		sqlArbre.saveNeud(tampon.getNewNeud());
 		sqlArbre.saveLien(tampon.getNewLien());
 		sqlArbre.editNeud(tampon.getEditNeud());

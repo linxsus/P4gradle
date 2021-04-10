@@ -155,7 +155,7 @@ class GestIdDonneeLongTest implements GestIdDonneeTest<Long> {
 	@Test
 	public void testImportExport() {
 		Long temp1 = donnee.getIdBaseDonnee();
-		GestIdDonneeLong donnee2 = new GestIdDonneeLong(donnee.getDonneeId(temp1));
+		GestIdDonneeLong donnee2 = new GestIdDonneeLong(donnee.getDonneeId(temp1),null);
 		Long temp2 = donnee2.getIdBaseDonnee();
 		assertTrue(temp2.equals(temp1),
 				"test de coherance d'export (getIdBaseDonnee) (getDonneeId) import par constructeur(GestBaseDonnee) si cela ne marche pas regarder d'abort si il n'y a pas d'erreur autre part");

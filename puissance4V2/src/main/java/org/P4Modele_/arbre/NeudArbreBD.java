@@ -39,7 +39,7 @@ public class NeudArbreBD extends NeudArbreBasic {
 		tampon.addNeud(this);
 	}
 
-	public NeudArbreBD(Factory factory, Set<Long> parent, Set<Long> enfant, boolean feuille, boolean explorable,
+	public NeudArbreBD(Factory factory, Set<Long> parent, Set<Long> enfant, int etat,
 			long id, Calculer calculer, int niveau) {
 		super(factory);
 		init();
@@ -54,8 +54,7 @@ public class NeudArbreBD extends NeudArbreBasic {
 		// } else {
 		this.enfant = enfant;
 		// }
-		this.feuille = feuille;
-		this.explorable = explorable;
+		this.etat=(byte) etat;
 		this.id = id;
 		this.calculer = calculer;
 		this.niveau = niveau;
@@ -88,7 +87,7 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 */
 	@Override
 	public void setExplorable(boolean explorable) {
-		if (this.explorable != explorable) {
+		if (isExplorable() != explorable) {
 			super.setExplorable(explorable);
 			tampon.editNeud(this);
 			mapArbre.Update(id, this);
@@ -102,13 +101,17 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 */
 	@Override
 	public void addParent(long newParent) {
-		if (parent == null) {
-			parent = new HashSet<>();
-			parent.addAll(mysqlarbre.getParent(id));
-		}
-		super.addParent(newParent);
-		tampon.newLien(newParent, id);
+//		if (parent == null) {
+//			parent = new HashSet<>();
+//			parent.addAll(mysqlarbre.getParent(id));
+//		}
+//		if (parent.size()==0 && isSupprimable()) {
+//			setSupprimable(false);
+//		}
+		tampon.editNeud(this);
 		mapArbre.Update(id, this);
+		super.addParent(newParent);
+		
 
 	}
 
@@ -119,12 +122,12 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 */
 	@Override
 	public void addEnfant(long newEnfant) {
-		if (enfant == null) {
-			enfant = new HashSet<>();
-			enfant.addAll(mysqlarbre.getEnfant(id));
-		}
+//		if (enfant == null) {
+//			enfant = new HashSet<>();
+//			enfant.addAll(mysqlarbre.getEnfant(id));
+//		}
 		super.addEnfant(newEnfant);
-		tampon.newLien(id, newEnfant);
+		tampon.editNeud(this);
 		mapArbre.Update(id, this);
 	}
 
@@ -135,11 +138,12 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 */
 	@Override
 	public void removeParent(Long oldParent) {
-		if (parent == null) {
-			parent = new HashSet<>();
-			parent.addAll(mysqlarbre.getParent(id));
-		}
+//		if (parent == null) {
+//			parent = new HashSet<>();
+//			parent.addAll(mysqlarbre.getParent(id));
+//		}
 		super.removeParent(oldParent);
+		tampon.editNeud(this);
 		mapArbre.Update(id, this);
 		// je l,enleve car normalement mis dans le remove enfant du parent.
 		// tampon.removeLien(oldParent, id);
@@ -152,34 +156,51 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 */
 	@Override
 	public void removeEnfant(Long oldEnfant) {
-		if (enfant == null) {
-			enfant = new HashSet<>();
-			enfant.addAll(mysqlarbre.getEnfant(id));
-		}
+//		if (enfant == null) {
+//			enfant = new HashSet<>();
+//			enfant.addAll(mysqlarbre.getEnfant(id));
+//		}
 		super.removeEnfant(oldEnfant);
-		tampon.removeLien(id, oldEnfant);
+		tampon.editNeud(this);
 		mapArbre.Update(id, this);
 	}
 
 	@Override
 	public Set<Long> getParent() {
-		if (parent == null) {
-			parent = new HashSet<>();
-			parent.addAll(mysqlarbre.getParent(id));
-		}
-		return parent;
+//		if (parent == null) {
+//			parent = new HashSet<>();
+//			parent.addAll(mysqlarbre.getParent(id));
+//		}
+		return super.getParent();
 	}
 
 	@Override
 	public Set<Long> getEnfant() {
-		if (enfant == null) {
-			enfant = new HashSet<>();
-			enfant.addAll(mysqlarbre.getEnfant(id));
-		}
-		return enfant;
+//		if (enfant == null) {
+//			enfant = new HashSet<>();
+//			enfant.addAll(mysqlarbre.getEnfant(id));
+//		}
+		return super.getEnfant();
 	}
 
 	public void setMapArbre(MapArbreBD mapArbreBD) {
 		this.mapArbre = mapArbreBD;
 	}
+
+	@Override
+	public void setSupprimable(boolean supprimable) {
+		if (isSupprimable() != supprimable) {
+			super.setSupprimable(supprimable);
+			tampon.editNeud(this);
+			// si le neud est un nouveau
+			// je le supprime des nouveau neud
+			// sinon je le met dans les updates
+//			if (!tampon.getNewNeud().remove(this)) {
+//			    mapArbre.Update(id, this);
+//			}
+		}
+		
+	}
+	
+	
 }

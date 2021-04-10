@@ -19,6 +19,7 @@ public class MapArbreBasic extends HashMap<Long, NeudArbre> implements MapArbre 
 		Optional<NeudArbre> resultat = values().stream().filter(new Predicate<NeudArbre>() {
 			@Override
 			public boolean test(NeudArbre x) {
+				//TODO il faut tester que l'on est pas suprimable.
 				return x.isExplorable(niveau);
 			}
 		}).findFirst();

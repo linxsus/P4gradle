@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.P4Metier.Factory.Factory;
@@ -59,16 +60,36 @@ public class SqlArbre {
 	 * @param neudBD
 	 *            neuds a sauvegarder
 	 */
-	public void saveNeud(Neud neudBD) {
-		String sql = "INSERT INTO `neud` (`idneud`, `explorable`,`calculer`,`niveau`,`feuille`) VALUES (?, ?,?,?,?);";
+	public void saveNeud(Neud neud) {
+		String sql = "INSERT INTO `neud` (`idneud`, `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 		new ExecuteSqlInsert(cn, sql) {
 			@Override
 			public void run() throws SQLException {
-				st.setLong(1, neudBD.getId());
-				st.setBoolean(2, neudBD.isExplorable());
-				st.setInt(3, neudBD.getCalculer().getValue());
-				st.setInt(4, neudBD.getNiveau());
-				st.setBoolean(5, neudBD.isFeuille());
+				st.setLong(1, neud.getId());
+				st.setInt(2, neud.etat());
+				st.setInt(3, neud.getCalculer().getValue());
+				st.setInt(4, neud.getNiveau());
+				int i=5;
+				for (Long enfant :neud.getEnfant()) {
+					st.setLong(i++, enfant);
+				}
+				for (;i<12;) {
+					
+					st.setLong(i, 9L);
+					i++;
+				}
+				//`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=?
+				for (Long parent :neud.getParent()) {
+					st.setLong(i++, parent);
+				}
+				for (;i<19;) {
+					
+					st.setLong(i, 9L);
+					i++;
+				}
+			
+				
+				
 			}
 		};
 	}
@@ -80,15 +101,32 @@ public class SqlArbre {
 	 *            neuds a sauvegarder
 	 */
 	public void saveNeud(Collection<Neud> neuds) {
-		String sql = "INSERT INTO `neud` (`idneud`, `explorable`,`calculer`,`niveau`,`feuille`) VALUES (?, ?,?,?,?); ";
+		String sql ="INSERT INTO `neud` (`idneud`, `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 		new ExecuteSqlInsertMultiple<Neud>(cn, sql, neuds) {
 			@Override
 			public void forEach(Neud neud) throws SQLException {
 				st.setLong(1, neud.getId());
-				st.setBoolean(2, neud.isExplorable());
+				st.setInt(2, neud.etat());
 				st.setInt(3, neud.getCalculer().getValue());
 				st.setInt(4, neud.getNiveau());
-				st.setBoolean(5, neud.isFeuille());
+				int i=5;
+				for (Long enfant :neud.getEnfant()) {
+					st.setLong(i++, enfant);
+				}
+				for (;i<12;) {
+					
+					st.setLong(i, 9L);
+					i++;
+				}
+				//`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=?
+				for (Long parent :neud.getParent()) {
+					st.setLong(i++, parent);
+				}
+				for (;i<19;) {
+					
+					st.setLong(i, 9L);
+					i++;
+				}
 			}
 		};
 	}
@@ -100,15 +138,31 @@ public class SqlArbre {
 	 *            collection de neud
 	 */
 	public void editNeud(Collection<Neud> neuds) {
-		String sql = "update `neud` SET  `explorable`=?, `calculer`=?,`niveau`=?,`feuille`=? where `idneud`=?; ";
+		String sql = "update `neud` SET  `etat`=?, `calculer`=?,`niveau`=?,`enfant1`=?,`enfant2`=?,`enfant3`=?,`enfant4`=?,`enfant5`=?,`enfant6`=?,`enfant7`=?,`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=? where `idneud`=?; ";
 		new ExecuteSqlInsertMultiple<Neud>(cn, sql, neuds) {
 			@Override
 			public void forEach(Neud neud) throws SQLException {
-				st.setBoolean(1, neud.isExplorable());
+				//update `neud` SET  `etat`=?, `calculer`=?,`niveau`=?,
+				st.setInt(1, neud.etat());
 				st.setInt(2, neud.getCalculer().getValue());
 				st.setInt(3, neud.getNiveau());
-				st.setBoolean(4, neud.isFeuille());
-				st.setLong(5, neud.getId());
+				//`enfant1`=?,`enfant2`=?,`enfant3`=?,`enfant4`=?,`enfant5`=?,`enfant6`=?,`enfant7`=?
+				int i=4;
+				for (Long enfant :neud.getEnfant()) {
+					st.setLong(i++, enfant);
+				}
+				for (;i<11;i++) {
+					st.setLong(i, 9L);
+				}
+				//`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=?
+				for (Long parent :neud.getParent()) {
+					st.setLong(i++, parent);
+				}
+				for (;i<18;i++) {
+					st.setLong(i, 9L);
+				}
+				//where `idneud`=?;
+				st.setLong(18, neud.getId());
 			}
 		};
 	}
@@ -129,39 +183,39 @@ public class SqlArbre {
 		};
 	}
 
-	/**
-	 * sauvegarde par lot de lien
-	 *
-	 * @param lienBD
-	 *            collection de lien
-	 */
-	public void saveLien(Collection<Lien> lienBD) {
-		String sql = "INSERT INTO `lien` (`parent`, `enfant`) VALUES (?, ?); ";
-		new ExecuteSqlInsertMultiple<Lien>(cn, sql, lienBD) {
-			@Override
-			public void forEach(Lien entity) throws SQLException {
-				st.setLong(1, entity.getParent());
-				st.setLong(2, entity.getEnfant());
-			}
-		};
-	}
+//	/**
+//	 * sauvegarde par lot de lien
+//	 *
+//	 * @param lienBD
+//	 *            collection de lien
+//	 */
+//	public void saveLien(Collection<Lien> lienBD) {
+//		String sql = "INSERT INTO `lien` (`parent`, `enfant`) VALUES (?, ?); ";
+//		new ExecuteSqlInsertMultiple<Lien>(cn, sql, lienBD) {
+//			@Override
+//			public void forEach(Lien entity) throws SQLException {
+//				st.setLong(1, entity.getParent());
+//				st.setLong(2, entity.getEnfant());
+//			}
+//		};
+//	}
 
-	/**
-	 * supression en lot de lien
-	 *
-	 * @param liens
-	 *            collection de lien a suprimer
-	 */
-	public void removeLien(Collection<Lien> liens) {
-		String sql = "delete from  `lien` where `parent`=? and `enfant`=?; ";
-		new ExecuteSqlDeleteMultiple<Lien>(cn, sql, liens) {
-			@Override
-			public void forEach(Lien lien) throws SQLException {
-				st.setLong(1, lien.getParent());
-				st.setLong(2, lien.getEnfant());
-			}
-		};
-	}
+//	/**
+//	 * supression en lot de lien
+//	 *
+//	 * @param liens
+//	 *            collection de lien a suprimer
+//	 */
+//	public void removeLien(Collection<Lien> liens) {
+//		String sql = "delete from  `lien` where `parent`=? and `enfant`=?; ";
+//		new ExecuteSqlDeleteMultiple<Lien>(cn, sql, liens) {
+//			@Override
+//			public void forEach(Lien lien) throws SQLException {
+//				st.setLong(1, lien.getParent());
+//				st.setLong(2, lien.getEnfant());
+//			}
+//		};
+//	}
 
 	/**
 	 * recuperation du neud dans la base dont l'id est fournit
@@ -172,63 +226,78 @@ public class SqlArbre {
 	 */
 	public NeudArbre getNeud(Long id) {
 		ExecuteSqlPrim<NeudArbre> neud = new ExecuteSqlPrim<>(null);
-		String sql = "SELECT `explorable`,`calculer`,`niveau`,`feuille` FROM `neud` WHERE `idneud`=" + id + ";";
+		String sql = "SELECT `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7` FROM `neud` WHERE `idneud`=" + id + ";";
 		new ExecuteSqlSelect(cn, sql) {
 			@Override
 			public void forEach(ResultSet rs) throws SQLException {
-				boolean explorable = rs.getBoolean(1);
+				int etat = rs.getInt(1);
 				Calculer calculer = Calculer.GetValue(rs.getInt(2));
 				int niveau = rs.getInt(3);
-				boolean feuille = rs.getBoolean(4);
-				neud.set(factory.getNeudArbreBD(null, null, feuille, explorable, id, calculer, niveau));
+				Set<Long> parents = new HashSet<>();
+				Set<Long> enfants = new HashSet<>();
+				Long idEnfant;
+				Long idParent;
+				for (int i=0;i<7;i++) {
+					idEnfant=rs.getLong(i+4);
+					idParent=rs.getLong(i+11);
+					if (idEnfant!=9L) {
+						enfants.add(idEnfant);
+					}
+					if (idParent!=9L) {
+						parents.add(idParent);
+					}
+				}
+				neud.set(factory.getNeudArbreBD(parents, enfants, etat, id, calculer, niveau));
 			}
 		};
+		//TODO ici pour faire des tests rechargement complet du neud
+		
 		return neud.get();
 	}
 
-	/**
-	 * recuperation de la liste des parents
-	 *
-	 * @param id
-	 *            id du neud dont on veut les parent
-	 * @return parent du neud
-	 */
-	public Set<Long> getParent(long id) {
-		Set<Long> parents = new HashSet<>();
-		String sql = "SELECT `parent` FROM `lien` WHERE `enfant`=" + id + ";";
-		new ExecuteSqlSelect(cn, sql) {
-			@Override
-			public void forEach(ResultSet rs) throws SQLException {
-				long newParent = rs.getLong(1);
-				// if (!tampon.isRemoveLien(newParent, id)) {
-				parents.add(newParent);
-				// }
-			}
-		};
-		return parents;
-	}
+//	/**
+//	 * recuperation de la liste des parents
+//	 *
+//	 * @param id
+//	 *            id du neud dont on veut les parent
+//	 * @return parent du neud
+//	 */
+//	public Set<Long> getParent(long id) {
+//		Set<Long> parents = new HashSet<>();
+//		String sql = "SELECT `parent` FROM `lien` WHERE `enfant`=" + id + ";";
+//		new ExecuteSqlSelect(cn, sql) {
+//			@Override
+//			public void forEach(ResultSet rs) throws SQLException {
+//				long newParent = rs.getLong(1);
+//				// if (!tampon.isRemoveLien(newParent, id)) {
+//				parents.add(newParent);
+//				// }
+//			}
+//		};
+//		return parents;
+//	}
 
-	/**
-	 * recuperation de la liste des enfants
-	 *
-	 * @param id
-	 *            id du neud dont on veut les enfants
-	 * @return enfant du neud
-	 */
-	public Set<Long> getEnfant(long id) {
-		Set<Long> enfants = new HashSet<>();
-		String sql = "SELECT `enfant` FROM `lien` WHERE `parent`=" + id + ";";
-		new ExecuteSqlSelect(cn, sql) {
-			@Override
-			public void forEach(ResultSet rs) throws SQLException {
-				long newParent = rs.getLong(1);
-				// if (!tampon.isRemoveLien(newParent, id)) {
-				enfants.add(newParent);
-				// }
-			}
-		};
-		return enfants;
-	}
+//	/**
+//	 * recuperation de la liste des enfants
+//	 *
+//	 * @param id
+//	 *            id du neud dont on veut les enfants
+//	 * @return enfant du neud
+//	 */
+//	public Set<Long> getEnfant(long id) {
+//		Set<Long> enfants = new HashSet<>();
+//		String sql = "SELECT `enfant` FROM `lien` WHERE `parent`=" + id + ";";
+//		new ExecuteSqlSelect(cn, sql) {
+//			@Override
+//			public void forEach(ResultSet rs) throws SQLException {
+//				long newParent = rs.getLong(1);
+//				// if (!tampon.isRemoveLien(newParent, id)) {
+//				enfants.add(newParent);
+//				// }
+//			}
+//		};
+//		return enfants;
+//	}
 
 	/**
 	 * recuperation d'un nombre (nb) de la liste des neud Explorable du niveau
@@ -242,23 +311,9 @@ public class SqlArbre {
 	 *            a partir de quelle enregistrement je lie
 	 * @return neud explorable
 	 */
-	public HashMap<Long, NeudArbre> getExplorable(int niveau, int nb, int debut) {
-		HashMap<Long, NeudArbre> result = new LinkedHashMap<>();
-		String sql = "SELECT `idneud`, `explorable`,`calculer`,`feuille` FROM `neud` WHERE `explorable`=1 and `niveau`="
-				+ niveau + " LIMIT " + debut + "," + nb + ";";
-		new ExecuteSqlSelect(cn, sql) {
-
-			@Override
-			public void forEach(ResultSet rs) throws SQLException {
-				Long idneud = rs.getLong(1);
-				boolean explorable = rs.getBoolean(2);
-				Calculer calculer = Calculer.GetValue(rs.getInt(3));
-				boolean feuille = rs.getBoolean(4);
-				NeudArbre neud = factory.getNeudArbreBD(null, null, feuille, explorable, idneud, calculer, niveau);
-				result.put(idneud, neud);
-			}
-		};
-		return result;
+	public Collection<Long> getExplorable(int niveau, int nb, int debut) {
+		//3 corespond a feuille et explorable possible bug
+		return getSuppExplo(niveau,nb, debut,3);
 	}
 
 	/**
@@ -272,7 +327,7 @@ public class SqlArbre {
 	 * @return neud explorable
 	 */
 
-	public HashMap<Long, NeudArbre> getExplorable(int niveau, int nb) {
+	public Collection<Long> getExplorable(int niveau, int nb) {
 		return getExplorable(niveau, nb, 0);
 	}
 
@@ -327,27 +382,28 @@ public class SqlArbre {
 	 * @param id
 	 *            id du neud a reinitialiser
 	 */
+	//TODO a refaire completement
 	public void reinitNeud(Long id) {
-		String sql = "update `neud` SET  `explorable`=1, `calculer`=4 where `idneud`=?;";
+		String sql = "update `neud` SET  `etat`=3, `calculer`=4 where `idneud`=?;";
 		new ExecuteSqlInsert(cn, sql) {
 			@Override
 			public void run() throws SQLException {
 				st.setLong(1, id);
-				removeEnfant(id);
+				//removeEnfant(id);
 			}
 		};
 	}
 
-	/**
-	 * supression des lien enfant du neud dont on fournis l'id
-	 *
-	 * @param id
-	 *            id du parents dont on veut supprimer les enfants
-	 */
-	public void removeEnfant(Long id) {
-		String sql = "delete from  `lien` where `parent`=" + id + ";";
-		new ExecuteSqlDelete(cn, sql);
-	}
+//	/**
+//	 * supression des lien enfant du neud dont on fournis l'id
+//	 *
+//	 * @param id
+//	 *            id du parents dont on veut supprimer les enfants
+//	 */
+//	public void removeEnfant(Long id) {
+//		String sql = "delete from  `lien` where `parent`=" + id + ";";
+//		new ExecuteSqlDelete(cn, sql);
+//	}
 
 	/**
 	 * vidage de la table reprise
@@ -355,5 +411,34 @@ public class SqlArbre {
 	public void removeReprise() {
 		String sql = "delete from  `reprise`";
 		new ExecuteSqlDelete(cn, sql);
+	}
+
+	public Collection<Long> getSupprimable(int nb) {
+		Collection<Long> result = new HashSet<>();
+		String sql = "SELECT `idneud` FROM `neud` WHERE `etat`="+4+" LIMIT 0," + nb + ";";
+		new ExecuteSqlSelect(cn, sql) {
+
+			@Override
+			public void forEach(ResultSet rs) throws SQLException {
+				Long idneud = rs.getLong(1);
+				result.add(idneud);
+			}
+		};
+		return result;
+	}
+	
+	private Collection<Long> getSuppExplo(int niveau, int nb, int debut,int etat) {
+		Collection<Long> result = new HashSet<>();
+		String sql = "SELECT `idneud` FROM `neud` WHERE `etat`="+etat+" and `niveau`="
+				+ niveau + " LIMIT " + debut + "," + nb + ";";
+		new ExecuteSqlSelect(cn, sql) {
+
+			@Override
+			public void forEach(ResultSet rs) throws SQLException {
+				Long idneud = rs.getLong(1);
+				result.add(idneud);
+			}
+		};
+		return result;
 	}
 }

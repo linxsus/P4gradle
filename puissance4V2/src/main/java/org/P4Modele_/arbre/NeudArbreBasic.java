@@ -18,8 +18,12 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	
 	protected Set<Long> parent = new HashSet<>();
 	protected Set<Long> enfant = new HashSet<>();
-	protected boolean feuille = true;
-	protected boolean explorable = true;
+    protected final byte FEUILLE = 0b001;
+    protected final byte EXPLORABLE = 0b010;
+    protected final byte SUPPRIMABLE = 0b100;
+    protected final byte TRON = 0b1000;
+    
+	protected byte etat=3;
 	protected long id;
 	protected Calculer calculer = Calculer.NONCALCULER;
 	protected int niveau;
@@ -157,7 +161,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public Set<Long> getParent() {
-		return parent;
+		return new HashSet<>(parent);
 	}
 
 	/*
@@ -172,7 +176,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public Set<Long> getEnfant() {
-		return enfant;
+		return new HashSet<>(enfant);
 	}
 
 	/*
@@ -187,7 +191,10 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public boolean isFeuille() {
-		return feuille;
+		if ((etat & FEUILLE) == FEUILLE) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -203,7 +210,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	@Override
 	public boolean isExplorable(int niveau) {
 		if (this.niveau <= niveau) {
-			return explorable;
+			return isExplorable();
 		} else {
 			return false;
 		}
@@ -221,7 +228,10 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public boolean isExplorable() {
-		return explorable;
+		if ((etat & EXPLORABLE) == EXPLORABLE) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -231,7 +241,12 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public void setExplorable(boolean explorable) {
-		this.explorable = explorable;
+		if (explorable) {
+			etat = (byte) (etat | EXPLORABLE);	
+		}else {
+			etat = (byte) (etat & (~EXPLORABLE));
+		}
+		
 	}
 
 	/*
@@ -241,6 +256,9 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public void addParent(long newParent) {
+		if (isSupprimable()) {
+			etat=3; // attention en cas de tron .... (mais normalement un tron n'est pas supprimable)
+ 		}
 		parent.add(newParent);
 	}
 
@@ -252,7 +270,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	@Override
 	public void addEnfant(long newEnfant) {
 		enfant.add(newEnfant);
-		feuille = false;
+		setFeuille(false);
 	}
 
 	/*
@@ -262,7 +280,16 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public void removeParent(Long oldParent) {
-		parent.remove(oldParent);
+		// je suprime le parent
+		if (parent.remove(oldParent)) {
+		// je doit suprimer aussi le lien dans le parent
+		factory.getMapArbre().get(oldParent).removeEnfant(id);
+		};
+		//si il n'y a plus de parent et que ce n'est pas le tron  alor le neud est supprimable
+		if ((parent.size()==0) && !isTron()) {
+			setSupprimable(true);
+		}
+		
 	}
 
 	/*
@@ -272,7 +299,11 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public void removeEnfant(Long oldEnfant) {
-		enfant.remove(oldEnfant);
+		// je suprime le lien enfant
+		if (enfant.remove(oldEnfant)) {
+		// je doit suprimer aussi le lien dans l'enfant
+		factory.getMapArbre().get(oldEnfant).removeParent(id);
+		}
 	}
 
 	/*
@@ -293,16 +324,16 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	@Override
 	public String toString() {
 		String str;
-		str="Neud [parent=" + parent + ", enfant=" + enfant + ", feuille=" + feuille + ", explorable=" + explorable
+		str="Neud [parent=" + parent + ", enfant=" + enfant + ", feuille=" + isFeuille() + ", explorable=" + isExplorable()+", supprimable="+isSupprimable()
 				+ ", id=" + id + ", calculer=" + calculer + ", niveau=" + niveau + "]\n"+new GestIdDonneeLong(factory).getDonneeId(id);
 		str+="parent \n";
 		for (Long temp : getParent()) {
-			str+=new GestIdDonneeLong(factory).getDonneeId(temp);
+			str+=new GestIdDonneeLong(factory).getDonneeId(temp)+" "+temp+"\n";
 
 		}
 		str+="enfent \n";
 		for (Long temp : getEnfant()) {
-			str+=new GestIdDonneeLong(factory).getDonneeId(temp);
+			str+=new GestIdDonneeLong(factory).getDonneeId(temp)+" "+temp+"\n";
 
 		}
 		
@@ -312,7 +343,11 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 
 	@Override
 	public void setFeuille(boolean feuille) {
-		this.feuille = feuille;
+		if (feuille) {
+			etat = (byte) (etat | FEUILLE);	
+		}else {
+			etat = (byte) (etat & (~FEUILLE));
+		}
 
 	}
 
@@ -354,6 +389,17 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 
 	@Override
 	public void addParent(Set<Long> parent) {
+		if (!isTron()) {
+			if ((parent.size() == 0)) {
+				setSupprimable(true);
+			} else {
+				// si le neud est supprimable et qu'on lui rajoute des parent il n'est plus
+				// supprimable
+				if (isSupprimable()) {
+					etat = 3; // on le definit comme feuille et explorable c'est une recreation du neud
+				}
+			}
+		}
 		this.parent = parent;
 
 	}
@@ -363,4 +409,57 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		this.enfant = enfant;
 
 	}
+
+	@Override
+	public boolean isSupprimable() {
+		if ((etat & SUPPRIMABLE) == SUPPRIMABLE) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isSupprimable(int niveau) {
+		if (this.niveau <= niveau) {
+			return isSupprimable();
+		} else {
+			return false;
+		}
+	}
+
+	
+	protected void setSupprimable(boolean supprimable ) {
+		
+		if (supprimable && !isTron()) {
+			etat = SUPPRIMABLE;	// si il est supprimable il n'est que supprimable
+		}else {
+			etat = (byte) (etat & (~SUPPRIMABLE));
+		}
+		
+	}
+
+	@Override
+	public int etat() {
+		return etat;
+	}
+
+	@Override
+	public void setTron(boolean tron) {
+//		if (tron) {
+//			etat = (byte) (etat | TRON);	
+//		}else {
+//			etat = (byte) (etat & (~TRON));
+//		}
+		
+	}
+
+	@Override
+	public boolean isTron() {
+		if ((etat & TRON) == TRON) {
+			return true;
+		}
+		return false;
+	}
+	
+	
 }

@@ -152,7 +152,7 @@ class GestIdDonneeInt3Test implements GestIdDonneeTest<int[]> {
 	@Test
 	public void testImportExport() {
 		int[] temp1 = donnee.getIdBaseDonnee();
-		GestIdDonneeInt3 donnee2 = new GestIdDonneeInt3(donnee.getDonneeId(temp1));
+		GestIdDonneeInt3 donnee2 = new GestIdDonneeInt3(donnee.getDonneeId(temp1),null);
 		int[] temp2 = donnee2.getIdBaseDonnee();
 		assertTrue(Arrays.equals(temp2, temp1),
 				"test de coherance d'export (getIdBaseDonnee) (getDonneeId) import par constructeur(GestBaseDonnee) si cela ne marche pas regarder d'abort si il n'y a pas d'erreur autre part");

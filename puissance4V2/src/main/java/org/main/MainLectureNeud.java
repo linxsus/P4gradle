@@ -3,11 +3,9 @@ package org.main;
 import java.util.Scanner;
 
 import org.P4Metier.Factory.Factory;
-import org.P4Metier.id.GestIdDonneeLong;
-import org.P4Metier.ordi.OrdinateurArbre;
-import org.P4Modele_.GestDonnee;
+
 import org.P4Modele_.Neud;
-import org.Persistant_.mysql.MysqlConnection;
+
 import org.Persistant_.requette.SqlArbre;
 
 public class MainLectureNeud {
