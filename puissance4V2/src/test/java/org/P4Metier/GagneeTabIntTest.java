@@ -20,7 +20,7 @@ public class GagneeTabIntTest implements GagneeTest {
 
 	@Override
 	public GestDonnee createDonee() {
-		return factory.getGestBaseDonnee();
+		return factory.getGestDonnee();
 	}
 
 }

@@ -34,6 +34,7 @@ import org.P4Modele_.map.MapArbreBD;
 import org.P4Modele_.map.MapArbreBasic;
 import org.Persistant_.mysql.MysqlConnection;
 import org.Persistant_.requette.SqlArbre;
+import org.quantum.GestDonneeTabByteQuantum;
 import org.test.TestSql;
 
 public class Factory {
@@ -129,9 +130,10 @@ public class Factory {
 	 *
 	 * @return
 	 */
-	public GestDonnee getGestBaseDonnee() {
+	public GestDonnee getGestDonnee() {
 		if (tabByte) {
-			return new GestDonneeTabByte(this);
+			//TODO quantum ou non
+			return new GestDonneeTabByteQuantum(this);
 		} else {
 			return new GestDonneeTabInt(this);
 		}

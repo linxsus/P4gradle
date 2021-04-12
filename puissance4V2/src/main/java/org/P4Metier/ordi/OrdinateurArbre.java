@@ -96,6 +96,7 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 		Gagnee gagnee = factory.getGagnee();
 		//boolean miroire = donnee.isMiroire();
 		//HashMap<Integer, Long> resultatColonne = new HashMap<>();
+		//int niveauInitial = 42;
 		int niveauInitial = donnee.getNbPionJouer();
 		int niveau = niveauInitial;
 		long idParent = 0;
@@ -112,8 +113,10 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 			// je recupere le neud suivant explorable
 			next = arbre.nextExplorable(niveau);
 			if (next == null) {
+				//niveau--;
 				niveau++;
-				if (niveau >= niveauMax) {
+				//if (niveau ==0) {
+				if (niveau ==niveauMax) {	
 					ok=true;
 				}
 				if (arbre.getNeud(tron).getCalculer()!=Calculer.NONCALCULER) {

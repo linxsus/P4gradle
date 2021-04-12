@@ -61,7 +61,7 @@ public class SqlArbre {
 	 *            neuds a sauvegarder
 	 */
 	public void saveNeud(Neud neud) {
-		String sql = "INSERT INTO `neud` (`idneud`, `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+		String sql = "INSERT INTO `neud` (`idneud`, `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`,`quantum`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 		new ExecuteSqlInsert(cn, sql) {
 			@Override
 			public void run() throws SQLException {
@@ -87,9 +87,7 @@ public class SqlArbre {
 					st.setLong(i, 9L);
 					i++;
 				}
-			
-				
-				
+				st.setInt(19, neud.getQunatum());	
 			}
 		};
 	}
@@ -101,7 +99,7 @@ public class SqlArbre {
 	 *            neuds a sauvegarder
 	 */
 	public void saveNeud(Collection<Neud> neuds) {
-		String sql ="INSERT INTO `neud` (`idneud`, `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+		String sql ="INSERT INTO `neud` (`idneud`, `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`,`quantum`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 		new ExecuteSqlInsertMultiple<Neud>(cn, sql, neuds) {
 			@Override
 			public void forEach(Neud neud) throws SQLException {
@@ -127,6 +125,7 @@ public class SqlArbre {
 					st.setLong(i, 9L);
 					i++;
 				}
+				st.setInt(19, neud.getQunatum());
 			}
 		};
 	}
@@ -138,7 +137,7 @@ public class SqlArbre {
 	 *            collection de neud
 	 */
 	public void editNeud(Collection<Neud> neuds) {
-		String sql = "update `neud` SET  `etat`=?, `calculer`=?,`niveau`=?,`enfant1`=?,`enfant2`=?,`enfant3`=?,`enfant4`=?,`enfant5`=?,`enfant6`=?,`enfant7`=?,`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=? where `idneud`=?; ";
+		String sql = "update `neud` SET  `etat`=?, `calculer`=?,`niveau`=?,`enfant1`=?,`enfant2`=?,`enfant3`=?,`enfant4`=?,`enfant5`=?,`enfant6`=?,`enfant7`=?,`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=?,`quantum`=? where `idneud`=?; ";
 		new ExecuteSqlInsertMultiple<Neud>(cn, sql, neuds) {
 			@Override
 			public void forEach(Neud neud) throws SQLException {
@@ -161,8 +160,9 @@ public class SqlArbre {
 				for (;i<18;i++) {
 					st.setLong(i, 9L);
 				}
+				st.setInt(18, neud.getQunatum());
 				//where `idneud`=?;
-				st.setLong(18, neud.getId());
+				st.setLong(19, neud.getId());
 			}
 		};
 	}
@@ -312,8 +312,18 @@ public class SqlArbre {
 	 * @return neud explorable
 	 */
 	public Collection<Long> getExplorable(int niveau, int nb, int debut) {
-		//3 corespond a feuille et explorable possible bug
-		return getSuppExplo(niveau,nb, debut,3);
+		Collection<Long> result = new HashSet<>();
+		String sql = "SELECT `idneud` FROM `neud` where `etat`=3 order by `quantum` DESC LIMIT " + debut + "," + nb + ";";
+		//String sql = "SELECT `idneud` FROM `neud` where `etat`=3 and niveau="+niveau+" LIMIT " + debut + "," + nb + ";";
+		new ExecuteSqlSelect(cn, sql) {
+
+			@Override
+			public void forEach(ResultSet rs) throws SQLException {
+				Long idneud = rs.getLong(1);
+				result.add(idneud);
+			}
+		};
+		return result;
 	}
 
 	/**
@@ -427,10 +437,10 @@ public class SqlArbre {
 		return result;
 	}
 	
-	private Collection<Long> getSuppExplo(int niveau, int nb, int debut,int etat) {
+	public Collection<Long> getExplorable1(int niveau, int nb) {
 		Collection<Long> result = new HashSet<>();
-		String sql = "SELECT `idneud` FROM `neud` WHERE `etat`="+etat+" and `niveau`="
-				+ niveau + " LIMIT " + debut + "," + nb + ";";
+		String sql = "SELECT `idneud` FROM `neud` WHERE `etat`="+3+" and `niveau`="
+				+ niveau + " LIMIT "  + nb + ";";
 		new ExecuteSqlSelect(cn, sql) {
 
 			@Override

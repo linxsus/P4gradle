@@ -4,11 +4,6 @@ import java.util.Set;
 
 public interface Neud {
 	
-	/**
-	 * enregistre le Quantum
-	 */
-
-	void setQuantum(int quantum);
 	
 	/**
 	 * 

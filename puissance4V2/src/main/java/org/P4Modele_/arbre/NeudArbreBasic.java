@@ -8,6 +8,7 @@ import org.P4Metier.id.GestIdDonneeLong;
 import org.P4Modele_.Calculer;
 import org.P4Modele_.Neud;
 import org.P4Modele_.NeudArbre;
+import org.quantum.GestDonneeTabByteQuantum;
 
 /**
  * @author xavier
@@ -27,7 +28,6 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	protected long id;
 	protected Calculer calculer = Calculer.NONCALCULER;
 	protected int niveau;
-	protected int quantum;
 	protected Factory factory;
 	/**
 	 * cree un neud
@@ -287,7 +287,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		factory.getMapArbre().get(oldParent).removeEnfant(id);
 		};
 		//si il n'y a plus de parent et que ce n'est pas le tron  alor le neud est supprimable
-		if ((parent.size()==0) && !isTron()) {
+		if ((parent.size()==0) && (calculer==Calculer.NONCALCULER) && (!isTron())) {
 			setSupprimable(true);
 		}
 		
@@ -303,7 +303,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		// je suprime le lien enfant
 		if (enfant.remove(oldEnfant)) {
 		// je doit suprimer aussi le lien dans l'enfant
-		factory.getMapArbre().get(oldEnfant).removeParent(id);
+			factory.getMapArbre().get(oldEnfant).removeParent(id);
 		}
 	}
 
@@ -461,14 +461,10 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		}
 		return false;
 	}
-	
-	public void setQuantum(int quantum) {
-		this.quantum=quantum;
-		
-	}
 
 	@Override
 	public int getQunatum() {
-		return quantum;
+		GestDonneeTabByteQuantum result= (GestDonneeTabByteQuantum)((GestIdDonneeLong) factory.getGestIDDonnee()).getDonneeId(id);
+		return result.calcQuantum();
 	}
 }

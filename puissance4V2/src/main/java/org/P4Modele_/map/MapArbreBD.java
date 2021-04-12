@@ -3,6 +3,7 @@
  */
 package org.P4Modele_.map;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 	
 	
 	// mini 20*SynchronizationBD.NBEXPLORABLEMAX;
-	protected final static int maxEnregistrement = 200 * SynchronizationBD.NBEXPLORABLEMAX;
+	protected final static int maxEnregistrement = 100 * SynchronizationBD.NBEXPLORABLEMAX;
 	protected LinkedList<Long> idsExplorable;
 
 	protected Collection<Long> mapExplorable;
@@ -164,6 +165,14 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 				// attention cette liste n'est pas jour il peut y a voir dans cette liste des
 				// neud supprimer ou déja calculer
 				mapExplorable = synchro.synchronization(niveau);
+				try {
+					if (System.in.available()>0) {
+					System.exit(0);;
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				// on insert dans la queu les nouveaux id explorable
 				idsExplorable.addAll(mapExplorable);
 				// System.out.print(" size " + size() + " "); // TODO permet de verifier que
@@ -195,7 +204,8 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 //			else {
 //			if (!neud.isExplorable()) {neudCalculer++;}}
 			
-		} while ((neud.isSupprimable()) || !neud.isExplorable());
+		} while ((neud.isSupprimable()) || !neud.isExplorable() );
+		if (neud.getId()==0) {return null;}
 		return neud;
 	}
 
@@ -259,14 +269,7 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 	//ici on definit que l'element le plus ancien doit etre supprimer si le map depasse maxEnregistrement
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<Long, NeudArbre> eldest) {
-		if (size() > (maxEnregistrement)) {
-			if (!depasser) {
-				depasser=true;
-				System.out.println("\n ----------depasser------------------------");
-			}
-			return true;
-		}
-		return false;
+		return size() > (maxEnregistrement);
 	}
 	
 	/**

@@ -1,1 +1,1 @@
-SELECT * FROM `neud` WHERE `etat`=1 and `niveau`=4 LIMIT 0,9000;
+SELECT COUNT(*) FROM neud WHERE calculer=4;

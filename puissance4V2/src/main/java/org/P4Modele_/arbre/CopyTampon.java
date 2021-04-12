@@ -42,6 +42,7 @@ public class CopyTampon {
 	 * @return the newNeud
 	 */
 	public Collection<Neud> getNewNeud() {
+		newNeud.removeIf(n -> (n.isSupprimable()));
 		return newNeud;
 	}
 

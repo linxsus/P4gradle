@@ -235,13 +235,16 @@ public class SynchronizationBD {
 			}
 			copyTampon = factory.getCopyTampon();
 //			sqlArbre.removeLien(copyTampon.getRemoveLien());
-			sqlArbre.removeNeud(copyTampon.getRemoveNeud());
+			sqlArbre.saveReprise(copyTampon.getEditNeud());
 			sqlArbre.editNeud(copyTampon.getEditNeud());
+			sqlArbre.removeReprise();
+			sqlArbre.removeNeud(copyTampon.getRemoveNeud());
+			
 			supprimer+= copyTampon.getRemoveNeud().size();
 			if (supprimable.size() > 0) {
 				System.out.print("x");
 			}
-			// TODO a voir si utile
+			// TODO a voir si utile (aparement oui :( )
 			factory.getMapArbre().clear();
 		} while (supprimable.size() > 0);
 		if (supprimer!=0) {
