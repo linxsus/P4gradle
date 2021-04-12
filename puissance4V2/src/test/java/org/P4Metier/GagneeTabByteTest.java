@@ -24,7 +24,7 @@ public class GagneeTabByteTest implements GagneeTest {
 
 	@Override
 	public GestDonnee createDonee() {
-		return factory.getGestBaseDonnee();
+		return factory.getGestDonnee();
 	}
 
 	@Test

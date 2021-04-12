@@ -29,31 +29,31 @@ public class MainArbre {
 //		donnee.ajoutPion(1);// 4
 //		
 		donnee.ajoutPion(4);// 1
-		donnee.ajoutPion(7);// 2
-		donnee.ajoutPion(4);// 3
-		donnee.ajoutPion(4);// 4
-		donnee.ajoutPion(4);// 5
-		
-		donnee.ajoutPion(3);// 6
-		donnee.ajoutPion(2);// 7
-		donnee.ajoutPion(3);// 8
-		donnee.ajoutPion(3);// 9
-		donnee.ajoutPion(4);// 10
-		donnee.ajoutPion(2);// 11
-		donnee.ajoutPion(1);// 12
-		donnee.ajoutPion(3);// 13
-		donnee.ajoutPion(7);// 14
-		donnee.ajoutPion(3);// 15
-		donnee.ajoutPion(3);// 16
-		donnee.ajoutPion(5);// 17
-		donnee.ajoutPion(6);// 18
-		donnee.ajoutPion(7);// 19
-		donnee.ajoutPion(6);// 20
-		donnee.ajoutPion(5);// 21
-		donnee.ajoutPion(6);//22
-		donnee.ajoutPion(6);//23
-		donnee.ajoutPion(6);//24
-		donnee.ajoutPion(4);
+//		donnee.ajoutPion(7);// 2
+//		donnee.ajoutPion(4);// 3
+//		donnee.ajoutPion(4);// 4
+//		donnee.ajoutPion(4);// 5
+//		
+//		donnee.ajoutPion(3);// 6
+//		donnee.ajoutPion(2);// 7
+//		donnee.ajoutPion(3);// 8
+//		donnee.ajoutPion(3);// 9
+//		donnee.ajoutPion(4);// 10
+//		donnee.ajoutPion(2);// 11
+//		donnee.ajoutPion(1);// 12
+//		donnee.ajoutPion(3);// 13
+//		donnee.ajoutPion(7);// 14
+//		donnee.ajoutPion(3);// 15
+//		donnee.ajoutPion(3);// 16
+//		donnee.ajoutPion(5);// 17
+//		donnee.ajoutPion(6);// 18
+//		donnee.ajoutPion(7);// 19
+//		donnee.ajoutPion(6);// 20
+//		donnee.ajoutPion(5);// 21
+//		donnee.ajoutPion(6);//22
+//		donnee.ajoutPion(6);//23
+//		donnee.ajoutPion(6);//24
+//		donnee.ajoutPion(4);
 		
 		//donnee.ajoutPion(4);// 6
 		//donnee.ajoutPion(3);// 7

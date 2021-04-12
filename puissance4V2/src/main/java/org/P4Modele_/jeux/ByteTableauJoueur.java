@@ -10,35 +10,8 @@ import org.P4Modele_.GestDonnee;
  * @author Xavier Gouraud
  *
  */
-public class ByteTableauJoueur {
-	// calcul du nb de colonne gagnable en diagonale
-	/**
-	 * nb de colonne diagonale possible
-	 */
-	// taille =HAUTEUR - 3 (nb de cas impossible pour avoir 4 pion successif en
-	// hauteur)
-	// + LARGEUR - 3 (nb de cas impossible pour avoir 4 pion successif en largeur)
-	// -1 pour enlever le cas du coin qui est en double.
-	protected final static int NB_COLONNE_DIAGONALE = ((((GestDonnee.HAUTEUR - 3) + GestDonnee.LARGEUR) - 3) - 1);
-	/**
-	 * decalage du pion en 0,0 a effectuer pour une diagonal vers le haut
-	 */
-	// calcul du decalage diagonal vers le haut
-	// decalage par raport au pion 0,0
-	// le pion (0,0) peut faire partie d'une combinaison
-	// gagnante et les pion au dessu de lui aussi jusqu'a hauteur_max-4
-	// donc on doit le decaler de 0+hauteur_max-4
-	protected final static int DECALAGE_HAUT = (GestDonnee.HAUTEUR - 4);
-	/**
-	 * decalage du pion en 0,0 a effectuer pour une diagonal vers le bas
-	 */
-	// calcul du decalage diagonal vers le bas
-	// decalage par raport au pion 0,0
-	// le pion (0,0) ne fait pas partie d'une combinaison
-	// gagnante et il faut le decale de 3 sur la droite pour qu'il puisse gangee
-	// donc on doit le decaler de 0-3
-	protected final static int DECALAGE_BAS = -3;
-
+public class ByteTableauJoueur  {
+	
 	/**
 	 * tableau de byte des colonne
 	 */
@@ -69,31 +42,25 @@ public class ByteTableauJoueur {
 		return this.hauteur[colonne];
 	}
 
+
 	/**
 	 * retourne le Byte Diagonal1 pour le pion en hauteur,colonne
-	 *
+	 * (diagonal1 de bas droite vers haut gauche)
 	 * @param hauteur
 	 *            hauteur du pion
 	 * @param colonne
 	 *            colonne du pion
+	 *
 	 * @return le byte Diagonal1
 	 */
 	public byte getDiagonal1(int hauteur, int colonne) {
-		// calcul du decalage vers la droite pour le pion hauteur,colonne
-		// on est en digonal vers le bas donc plus on monte plus il y a de decalage
-		// decalage=decalage de colonne + decalage hauteur+ decalage initiale
-		int decalage = colonne + hauteur + DECALAGE_BAS;
-		// si le pion decalee est se trouve dans diagonal1
-		if ((decalage > -1) && (decalage < NB_COLONNE_DIAGONALE)) {
-			// on retourne le byte qui concerne le pion
-			return diagonal1[decalage];
-		} else {
-			return 0x00;
-		}
+		return getDiagonal1(hauteur, colonne, diagonal1);
 	}
+	
 
 	/**
-	 * retourne le Byte Diagonal2 pour le pion en hauteur,colonne
+	 * retourne le Byte Diagonal1 pour le pion en hauteur,colonne
+	 * (diagonal2 de bas gauche vers haut droit)
 	 *
 	 * @param hauteur
 	 *            hauteur du pion
@@ -102,17 +69,7 @@ public class ByteTableauJoueur {
 	 * @return le byte Diagonal2
 	 */
 	public byte getDiagonal2(int hauteur, int colonne) {
-		// calcul du decalage vers la droite pour le pion hauteur,colonne
-		// on est en digonal vers le haut donc plus on monte moin il y a de decalage
-		// decalage=decalage de colonne - decalage hauteur+ decalage initiale
-		int i = (colonne - hauteur) + DECALAGE_HAUT;
-		// si le pion decalee est se trouve dans diagonal2
-		if ((i > -1) && (i < NB_COLONNE_DIAGONALE)) {
-			// on retourne le byte qui concerne le pion
-			return diagonal2[i];
-		} else {
-			return 0x00;
-		}
+		return getDiagonal2(hauteur, colonne, diagonal2);
 	}
 
 	/**
@@ -204,20 +161,6 @@ public class ByteTableauJoueur {
 		this.horizontal[hauteur] = (byte) (this.horizontal[hauteur] | ((byte) 1 << (byte) colonne));
 	}
 
-	/**
-	 * affecte un pion en hauteur,colonne pour le tableau
-	 *
-	 * @param hauteur
-	 *            hauteur du pion
-	 * @param colonne
-	 *            colonne du pion
-	 */
-	public void ajouterPion(int hauteur, int colonne) {
-		setHauteur(hauteur, colonne);
-		setDiagonal1(hauteur, colonne);
-		setDiagonal2(hauteur, colonne);
-		setHorizontal(hauteur, colonne);
-	}
 
 	/**
 	 * on enleve un pion en hauteur,colonne pour le tableau byte hauteur
@@ -287,21 +230,7 @@ public class ByteTableauJoueur {
 		this.horizontal[hauteur] = (byte) (this.horizontal[hauteur] & ~((byte) 1 << (byte) colonne));
 	}
 
-	/**
-	 * on enleve un pion en hauteur,colonne pour tous les tableau byte
-	 *
-	 * @param hauteur
-	 *            hauteur du pion
-	 * @param colonne
-	 *            colonne du pion
-	 *
-	 */
-	public void enleverPion(int hauteur, int colonne) {
-		remHauteur(hauteur, colonne);
-		remDiagonal1(hauteur, colonne);
-		remDiagonal2(hauteur, colonne);
-		remHorizontal(hauteur, colonne);
-	}
+	
 
 	/**
 	 * retourne 1 si il y a un pion en hauteur,colonne
@@ -322,4 +251,117 @@ public class ByteTableauJoueur {
 		}
 		return resultat;
 	}
+	
+	// calcul du nb de colonne gagnable en diagonale
+			/**
+			 * nb de colonne diagonale possible
+			 */
+			// taille =HAUTEUR - 3 (nb de cas impossible pour avoir 4 pion successif en
+			// hauteur)
+			// + LARGEUR - 3 (nb de cas impossible pour avoir 4 pion successif en largeur)
+			// -1 pour enlever le cas du coin qui est en double.
+			protected final static int NB_COLONNE_DIAGONALE = ((((GestDonnee.HAUTEUR - 3) + GestDonnee.LARGEUR) - 3) - 1);
+			/**
+			 * decalage du pion en 0,0 a effectuer pour une diagonal vers le haut
+			 */
+			// calcul du decalage diagonal vers le haut
+			// decalage par raport au pion 0,0
+			// le pion (0,0) peut faire partie d'une combinaison
+			// gagnante et les pion au dessu de lui aussi jusqu'a hauteur_max-4
+			// donc on doit le decaler de 0+hauteur_max-4
+			protected final static int DECALAGE_HAUT = (GestDonnee.HAUTEUR - 4);
+			/**
+			 * decalage du pion en 0,0 a effectuer pour une diagonal vers le bas
+			 */
+			// calcul du decalage diagonal vers le bas
+			// decalage par raport au pion 0,0
+			// le pion (0,0) ne fait pas partie d'une combinaison
+			// gagnante et il faut le decale de 3 sur la droite pour qu'il puisse gangee
+			// donc on doit le decaler de 0-3
+			protected final static int DECALAGE_BAS = -3;
+
+			/**
+			 * retourne le Byte Diagonal1 pour le pion en hauteur,colonne
+			 * (diagonal1 de bas droite vers haut gauche)
+			 * @param hauteur
+			 *            hauteur du pion
+			 * @param colonne
+			 *            colonne du pion
+			 *
+			 * @return le byte Diagonal1
+			 */
+			protected byte getDiagonal1(int hauteur, int colonne,byte[] diag) {
+				// calcul du decalage vers la droite pour le pion hauteur,colonne
+				// on est en digonal vers le bas donc plus on monte plus il y a de decalage
+				// decalage=decalage de colonne + decalage hauteur+ decalage initiale
+				int decalage = colonne + hauteur + DECALAGE_BAS;
+				// si le pion decalee est se trouve dans diagonal1
+				if ((decalage > -1) && (decalage < NB_COLONNE_DIAGONALE)) {
+					// on retourne le byte qui concerne le pion
+					return diag[decalage];
+				} else {
+					return 0x00;
+				}
+			}
+			
+
+			/**
+			 * retourne le Byte Diagonal1 pour le pion en hauteur,colonne
+			 * (diagonal2 de bas gauche vers haut droit)
+			 *
+			 * @param hauteur
+			 *            hauteur du pion
+			 * @param colonne
+			 *            colonne du pion
+			 * @return le byte Diagonal2
+			 */
+			protected byte getDiagonal2(int hauteur, int colonne,byte[] diag) {
+				// calcul du decalage vers la droite pour le pion hauteur,colonne
+				// on est en digonal vers le haut donc plus on monte moin il y a de decalage
+				// decalage=decalage de colonne - decalage hauteur+ decalage initiale
+				int i = (colonne - hauteur) + DECALAGE_HAUT;
+				// si le pion decalee est se trouve dans diagonal2
+				if ((i > -1) && (i < NB_COLONNE_DIAGONALE)) {
+					// on retourne le byte qui concerne le pion
+					return diag[i];
+				} else {
+					return 0x00;
+				}
+			}
+			
+			/**
+			 * affecte un pion en hauteur,colonne pour le tableau
+			 *
+			 * @param hauteur
+			 *            hauteur du pion
+			 * @param colonne
+			 *            colonne du pion
+			 */
+			public void ajouterPion(int hauteur, int colonne) {
+				setHauteur(hauteur, colonne);
+				setDiagonal1(hauteur, colonne);
+				setDiagonal2(hauteur, colonne);
+				setHorizontal(hauteur, colonne);
+			}
+			
+		
+			/**
+			 * on enleve un pion en hauteur,colonne pour tous les tableau byte
+			 *
+			 * @param hauteur
+			 *            hauteur du pion
+			 * @param colonne
+			 *            colonne du pion
+			 *
+			 */
+			public void enleverPion(int hauteur, int colonne) {
+				remHauteur(hauteur, colonne);
+				remDiagonal1(hauteur, colonne);
+				remDiagonal2(hauteur, colonne);
+				remHorizontal(hauteur, colonne);
+			}
+
+
+
+			
 }

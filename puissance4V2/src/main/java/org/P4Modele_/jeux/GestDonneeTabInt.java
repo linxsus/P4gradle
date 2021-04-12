@@ -145,7 +145,7 @@ public class GestDonneeTabInt implements GestDonnee {
 
 	@Override
 	public GestDonnee getNewBase() {
-		return factory.getGestBaseDonnee();
+		return factory.getGestDonnee();
 	}
 
 	@Override

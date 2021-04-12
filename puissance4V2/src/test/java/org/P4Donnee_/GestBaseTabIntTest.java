@@ -15,6 +15,6 @@ class GestBaseTabIntTest implements GestBaseDonneeTest {
 
 	@Override
 	public GestDonnee createInstance() {
-		return factory.getGestBaseDonnee();
+		return factory.getGestDonnee();
 	}
 }

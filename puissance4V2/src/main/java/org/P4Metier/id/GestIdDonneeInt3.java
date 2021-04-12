@@ -76,7 +76,7 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 	public GestIdDonneeInt3(Factory factory) {
 		super();
 		this.factory = factory;
-		baseDonnee = factory.getGestBaseDonnee();
+		baseDonnee = factory.getGestDonnee();
 	}
 
 	
@@ -202,7 +202,7 @@ public class GestIdDonneeInt3 implements GestIdDonnee<int[]> {
 
 	@Override
 	public GestDonnee getDonneeId(int[] id) {
-		GestDonnee temp = factory.getGestBaseDonnee();
+		GestDonnee temp = factory.getGestDonnee();
 		// pour tous les id
 		for (int k = 0; k < 3; k++) {
 			// optimise un peut et surtout evite de modifier l'original

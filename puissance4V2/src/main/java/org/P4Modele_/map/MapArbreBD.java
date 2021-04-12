@@ -195,7 +195,7 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 //			else {
 //			if (!neud.isExplorable()) {neudCalculer++;}}
 			
-		} while ((neud.isSupprimable()) || !neud.isExplorable());
+		} while ((neud.isSupprimable()) || !neud.isExplorable() || neud.getId()==0);
 		return neud;
 	}
 

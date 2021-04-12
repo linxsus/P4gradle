@@ -51,7 +51,7 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 	public GestIdDonneeLong(Factory factory) {
 		super();
 		this.factory = factory;
-		baseDonnee = factory.getGestBaseDonnee();
+		baseDonnee = factory.getGestDonnee();
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class GestIdDonneeLong implements GestIdDonnee<Long> {
 	@Override
 	public GestDonnee getDonneeId(Long idOriginal) {
 		long id = idOriginal;// copie pour eviter de modifier le long original.
-		GestDonnee resultat = factory.getGestBaseDonnee();
+		GestDonnee resultat = factory.getGestDonnee();
 		// pour toute les colonne en partant de la derniere vue que c'est la derniere
 		// mise
 		for (int i = LARGEUR - 1; i >= 0; i--) {

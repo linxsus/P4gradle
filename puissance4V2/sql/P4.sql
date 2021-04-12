@@ -12,12 +12,12 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
--- Listage de la structure de la base pour puissance4
-DROP DATABASE IF EXISTS `puissance4V3`;
-CREATE DATABASE IF NOT EXISTS `puissance4V3` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `puissance4V3`;
+-- Listage de la structure de la base pour puissance4v3
+DROP DATABASE IF EXISTS `puissance4v3`;
+CREATE DATABASE IF NOT EXISTS `puissance4v3` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `puissance4v3`;
 
--- Listage de la structure de la table puissance4. neud
+-- Listage de la structure de la table puissance4v3. neud
 DROP TABLE IF EXISTS `neud`;
 CREATE TABLE IF NOT EXISTS `neud` (
   `idneud` bigint(20) unsigned NOT NULL,
@@ -38,15 +38,16 @@ CREATE TABLE IF NOT EXISTS `neud` (
   `enfant5` bigint(20) unsigned NOT NULL,
   `enfant6` bigint(20) unsigned NOT NULL,
   `enfant7` bigint(20) unsigned NOT NULL,
-  
+  `quantum` INT(11) DEFAULT 0,
   PRIMARY KEY (`idneud`),
   UNIQUE KEY `idneud_UNIQUE` (`idneud`),
-  KEY `Index 3` (`etat`,`niveau`)
+  KEY `Index 3` (`etat`,`niveau`),
+  KEY `Index 1` (`quantum`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 
 -- Les données exportées n'étaient pas sélectionnées.
 
--- Listage de la structure de la table puissance4. reprise
+-- Listage de la structure de la table puissance4v3. reprise
 DROP TABLE IF EXISTS `reprise`;
 CREATE TABLE IF NOT EXISTS `reprise` (
   `idreprise` bigint(20) NOT NULL,

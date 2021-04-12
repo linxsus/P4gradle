@@ -4,16 +4,16 @@ import java.util.Arrays;
 
 import org.P4Metier.Factory.Factory;
 import org.P4Modele_.GestDonnee;
-import org.quantum.ByteTablQuantumJoueur;
+import org.quantum.ByteTableauJoueurQuantum;
 
-public class GestDonneeTabByte implements GestDonnee {
+public class GestDonneeTabByte  implements GestDonnee {
 
 	protected int[] dernierJouer = new int[HAUTEUR * LARGEUR];
 	protected int nbPionJouer = 0;
 
 	protected int[] nbPionColonne = new int[LARGEUR];
 //TODO ici remplacer pour la gestion Quantum
-	protected ByteTableauJoueur[] byteTableauJoueur = new ByteTablQuantumJoueur[2];
+	protected ByteTableauJoueur[] byteTableauJoueur = new ByteTableauJoueur[2];
 	protected Factory factory;
 
 	public GestDonneeTabByte(Factory factory) {
@@ -67,6 +67,8 @@ public class GestDonneeTabByte implements GestDonnee {
 			nbPionJouer++;
 			byteTableauJoueur[joueur - 1].ajouterPion(hauteur, colonne);
 		} else {
+			//TODO ??????????????? pourquoi on enleve un pion on ne devrait pas rien faire??
+			// on est en train de faire une copie de tableau
 			byteTableauJoueur[0].enleverPion(hauteur, colonne);
 			byteTableauJoueur[1].enleverPion(hauteur, colonne);
 		}
@@ -135,7 +137,7 @@ public class GestDonneeTabByte implements GestDonnee {
 	protected void init() {
 		//TODO ici a remplacer pour gestion Quantum
 		for (int i = 0; i < byteTableauJoueur.length; i++) {
-			byteTableauJoueur[i] = new ByteTablQuantumJoueur();
+			byteTableauJoueur[i] = new ByteTableauJoueur();
 		}
 	}
 
@@ -165,7 +167,7 @@ public class GestDonneeTabByte implements GestDonnee {
 
 	@Override
 	public GestDonnee getNewBase() {
-		return factory.getGestBaseDonnee();
+		return factory.getGestDonnee();
 	}
 
 	@Override
