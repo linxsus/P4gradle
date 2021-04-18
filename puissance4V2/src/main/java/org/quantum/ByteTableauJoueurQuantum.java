@@ -13,20 +13,20 @@ public class ByteTableauJoueurQuantum extends ByteTableauJoueur {
 //	/**
 //	 * tableau de byte des colonne inverse
 //	 */
-//	protected byte[][] hauteurInv = new byte[2][GestDonnee.LARGEUR];
-//	/**
-//	 * tableau de byte des diagonal vers le bas inverse
-//	 */
-//	protected byte[][] diagonal1Inv = new byte[2][ByteTableauVar.NB_COLONNE_DIAGONALE];
-//	/**
-//	 * tableau de byte des diagonal vers le haut inverse
-//	 */
-//	protected byte[][] diagonal2Inv = new byte[2][ByteTableauVar.NB_COLONNE_DIAGONALE];
-//	/**
-//	 * tableau de byte des largeur inverse
-//	 */
-//	protected byte[][] horizontalInv = new byte[2][GestDonnee.HAUTEUR];
-//	
+	protected byte[] hauteurInv = new byte[GestDonnee.LARGEUR];
+	/**
+	 * tableau de byte des diagonal vers le bas inverse
+	 */
+	protected byte[] diagonal1Inv = new byte[NB_COLONNE_DIAGONALE];
+	/**
+	 * tableau de byte des diagonal vers le haut inverse
+	 */
+	protected byte[] diagonal2Inv = new byte[NB_COLONNE_DIAGONALE];
+	/**
+	 * tableau de byte des largeur inverse
+	 */
+	protected byte[] horizontalInv = new byte[GestDonnee.HAUTEUR];
+	
 //	protected int joueur=0;
 //
 //	/**
@@ -42,26 +42,26 @@ public class ByteTableauJoueurQuantum extends ByteTableauJoueur {
 //	 * creation de l'object 
 //	 *  
 //	 */
-//	public ByteTablQuantumJoueur() {
-//		super();
-//		for (int i=0;i<2;i++) {
-//		for (int hauteur=0;hauteur<GestDonnee.HAUTEUR;hauteur++) {
-//			for(int colonne=0;colonne<GestDonnee.LARGEUR;colonne++) {
-//				this.hauteurInv[i][colonne] = (byte) (this.hauteurInv[i][colonne] | ((byte) 1 << (byte) hauteur));
-//				this.horizontalInv[i][hauteur] = (byte) (this.horizontalInv[i][hauteur] | ((byte) 1 << (byte) colonne));
-//				int j = (hauteur + colonne) + ByteTableauVar.DECALAGE_BAS;
-//				if ((j > -1) && (j < ByteTableauVar.NB_COLONNE_DIAGONALE)) {
-//					this.diagonal1Inv[i][j] = (byte) (this.diagonal1Inv[i][j] | ((byte) 1 << (byte) hauteur));
-//				}
-//				j = (+colonne - hauteur) + ByteTableauVar.DECALAGE_HAUT;
-//				if ((j > -1) && (j < ByteTableauVar.NB_COLONNE_DIAGONALE)) {
-//					this.diagonal2Inv[i][j] = (byte) (this.diagonal2Inv[i][j] | ((byte) 1 << (byte) hauteur));
-//				}
-//			}
-//		}
-//		}
-//		
-//	}
+	public ByteTableauJoueurQuantum() {
+		super();
+		
+		for (int hauteur=0;hauteur<GestDonnee.HAUTEUR;hauteur++) {
+			for(int colonne=0;colonne<GestDonnee.LARGEUR;colonne++) {
+				this.hauteurInv[colonne] = (byte) (this.hauteurInv[colonne] | ((byte) 1 << (byte) hauteur));
+				this.horizontalInv[hauteur] = (byte) (this.horizontalInv[hauteur] | ((byte) 1 << (byte) colonne));
+				int j = (hauteur + colonne) + DECALAGE_BAS;
+				if ((j > -1) && (j < NB_COLONNE_DIAGONALE)) {
+					this.diagonal1Inv[j] = (byte) (this.diagonal1Inv[j] | ((byte) 1 << (byte) hauteur));
+				}
+				j = (+colonne - hauteur) + DECALAGE_HAUT;
+				if ((j > -1) && (j < NB_COLONNE_DIAGONALE)) {
+					this.diagonal2Inv[j] = (byte) (this.diagonal2Inv[j] | ((byte) 1 << (byte) hauteur));
+				}
+			}
+		}
+		
+		
+	}
 //	
 //	
 //	/**
@@ -69,76 +69,82 @@ public class ByteTableauJoueurQuantum extends ByteTableauJoueur {
 //	 * et enleve un pion en hauteur,colonne pour le tableau byte HauteurInv
 //	 * 
 //	 */
-//	protected void setHauteur(int hauteur, int colonne) {
-//		this.hauteurInv[joueur][colonne] = (byte) (this.hauteurInv[joueur][colonne] & ~((byte) 1 << (byte) hauteur));
-//	}
+	protected void setHauteur(int hauteur, int colonne) {
+		super.setHauteur(hauteur, colonne);
+		this.hauteurInv[colonne] = (byte) (this.hauteurInv[colonne] & ~((byte) 1 << (byte) hauteur));
+	}
 //	
 //	/**
 //	 * on enleve un pion en hauteur,colonne pour le tableau byte hauteur 
 //	 * affecte un pion en hauteur,colonne pour le tableau byte HauteurInv
 //	 * 
 //	 */
-//	protected void remHauteur(int hauteur, int colonne) {
-//		this.hauteurInv[joueur][colonne] = (byte) (this.hauteurInv[joueur][colonne] | ((byte) 1 << (byte) hauteur));
-//	}
+	protected void remHauteur(int hauteur, int colonne) {
+		super.remHauteur(hauteur, colonne);
+		this.hauteurInv[colonne] = (byte) (this.hauteurInv[colonne] | ((byte) 1 << (byte) hauteur));
+	}
 //	
 //	/**
 //	*affecte un pion en hauteur,colonne pour le tableau byte Diagonal1
 //	*on enleve un pion en hauteur,colonne pour le tableau byte Diagonal1Inv 
 //	**/
 //
-//	protected void setDiagonal1(int hauteur, int colonne) {
-//		// calcul du decalage vers la droite pour le pion hauteur,colonne
-//		// on est en digonal vers le bas donc plus on monte plus il y a de decalage
-//		// decalage=decalage de colonne + decalage hauteur+ decalage initiale
-//		int i = (hauteur + colonne) + ByteTableauVar.DECALAGE_BAS;
-//		// si le pion decalee se trouve dans diagonal1
-//		if ((i > -1) && (i < ByteTableauVar.NB_COLONNE_DIAGONALE)) {
-//			// on enleve le bit
-//			this.diagonal1Inv[joueur][i] = (byte) (this.diagonal1Inv[joueur][i] & ~((byte) 1 << (byte) hauteur));
-//		}
-//	}
+	protected void setDiagonal1(int hauteur, int colonne) {
+		super.setDiagonal1(hauteur, colonne);
+		// calcul du decalage vers la droite pour le pion hauteur,colonne
+		// on est en digonal vers le bas donc plus on monte plus il y a de decalage
+		// decalage=decalage de colonne + decalage hauteur+ decalage initiale
+		int i = (hauteur + colonne) + DECALAGE_BAS;
+		// si le pion decalee se trouve dans diagonal1
+		if ((i > -1) && (i < NB_COLONNE_DIAGONALE)) {
+			// on enleve le bit
+			this.diagonal1Inv[i] = (byte) (this.diagonal1Inv[i] & ~((byte) 1 << (byte) hauteur));
+		}
+	}
 //
 //	/**
 //	 * on enleve un pion en hauteur,colonne pour le tableau byte Diagonal1
 //	 * affecte un pion en hauteur,colonne pour le tableau byte Diagonal1Inv
 //	 *
 //	 */
-//	protected void remDiagonal1(int hauteur, int colonne) {
-//		int i = (hauteur + colonne) + ByteTableauVar.DECALAGE_BAS;
-//		if ((i > -1) && (i < ByteTableauVar.NB_COLONNE_DIAGONALE)) {
-//			this.diagonal1Inv[joueur][i] = (byte) (this.diagonal1Inv[joueur][i] | ((byte) 1 << (byte) hauteur));
-//		}
-//		
-//		
-//	}
+	protected void remDiagonal1(int hauteur, int colonne) {
+		super.remDiagonal1(hauteur, colonne);
+		int i = (hauteur + colonne) + DECALAGE_BAS;
+		if ((i > -1) && (i < NB_COLONNE_DIAGONALE)) {
+			this.diagonal1Inv[i] = (byte) (this.diagonal1Inv[i] | ((byte) 1 << (byte) hauteur));
+		}
+		
+		
+	}
 //
 //	/**
 //	 * affecte un pion en hauteur,colonne pour le tableau byte Diagonal2
 //	 * on enleve un pion en hauteur,colonne pour le tableau byte Diagonal2Inv
 //	 * 
 //	 */
-//	protected void setDiagonal2(int hauteur, int colonne) {
-//		// calcul du decalage vers la droite pour le pion hauteur,colonne
-//		// on est en digonal vers le bas donc plus on monte plus il y a de decalage
-//		// decalage=decalage de colonne + decalage hauteur+ decalage initiale
-//		int i = (+colonne - hauteur) + ByteTableauVar.DECALAGE_HAUT;
-//		// si le pion decalee est se trouve dans diagonal2
-//		if ((i >= 0) && (i < ByteTableauVar.NB_COLONNE_DIAGONALE)) {
-//			// on enleve le bit
-//			this.diagonal2Inv[joueur][i] = (byte) (this.diagonal2Inv[joueur][i] & ~((byte) 1 << (byte) hauteur));
-//		}
-//	}
-//
+	protected void setDiagonal2(int hauteur, int colonne) {
+		super.setDiagonal2(hauteur, colonne);
+		// calcul du decalage vers la droite pour le pion hauteur,colonne
+		// on est en digonal vers le bas donc plus on monte plus il y a de decalage
+		// decalage=decalage de colonne + decalage hauteur+ decalage initiale
+		int i = (+colonne - hauteur) + DECALAGE_HAUT;
+		// si le pion decalee est se trouve dans diagonal2
+		if ((i >= 0) && (i < NB_COLONNE_DIAGONALE)) {
+			// on enleve le bit
+			this.diagonal2Inv[i] = (byte) (this.diagonal2Inv[i] & ~((byte) 1 << (byte) hauteur));
+		}
+	}
+
 //	/**
 //	 * affecte un pion en hauteur,colonne pour le tableau byte hauteur
 //	 * on enleve un pion en hauteur,colonne pour le tableau byte hauteurInv
 //	 *
 //	 */
-//	protected void setHorizontal(int hauteur, int colonne) {
-//		this.horizontalInv[joueur][hauteur] = (byte) (this.horizontalInv[joueur][hauteur] & ~((byte) 1 << (byte) colonne));
-//
-//	}
+	protected void setHorizontal(int hauteur, int colonne) {
+		super.setHorizontal(hauteur, colonne);
+		this.horizontalInv[hauteur] = (byte) (this.horizontalInv[hauteur] & ~((byte) 1 << (byte) colonne));
+
+	}
 //	
 //
 //	/**
@@ -146,23 +152,25 @@ public class ByteTableauJoueurQuantum extends ByteTableauJoueur {
 //	 * affecte un pion en hauteur,colonne pour le tableau byte Diagonal2Inv
 //	 *
 //	 */
-//	protected void remDiagonal2(int hauteur, int colonne) {
-//		int i = (+colonne - hauteur) + ByteTableauVar.DECALAGE_HAUT;
-//		if ((i > -1) && (i < ByteTableauVar.NB_COLONNE_DIAGONALE)) {
-//			this.diagonal2Inv[joueur][i] = (byte) (this.diagonal2Inv[joueur][i] | ((byte) 1 << (byte) hauteur));
-//		}
-//		
-//		
-//	}
+	protected void remDiagonal2(int hauteur, int colonne) {
+		super.remDiagonal2(hauteur, colonne);
+		int i = (+colonne - hauteur) + DECALAGE_HAUT;
+		if ((i > -1) && (i < NB_COLONNE_DIAGONALE)) {
+			this.diagonal2Inv[i] = (byte) (this.diagonal2Inv[i] | ((byte) 1 << (byte) hauteur));
+		}
+		
+		
+	}
 //
 //	/**
 //	 * on enleve un pion en hauteur,colonne pour le tableau byte horizontal
 //	 * affecte un pion en hauteur,colonne pour le tableau byte horizontalInv
 //	 *
 //	 */
-//	protected void remHorizontal(int hauteur, int colonne) {
-//		this.horizontalInv[joueur][hauteur] = (byte) (this.horizontalInv[joueur][hauteur] | ((byte) 1 << (byte) colonne));
-//	}
+	protected void remHorizontal(int hauteur, int colonne) {
+		super.remHorizontal(hauteur, colonne);
+		this.horizontalInv[hauteur] = (byte) (this.horizontalInv[hauteur] | ((byte) 1 << (byte) colonne));
+	}
 //
 //	/**
 //	 * methode a ne pas utiliser utiliser enleverPionQuantum(int,int)
@@ -241,52 +249,46 @@ public class ByteTableauJoueurQuantum extends ByteTableauJoueur {
 //		return resultat;
 //	}	
 	
-	protected byte diagonal[]= {15,31,63,63,62,60};
-	protected byte vertical=63;
-	protected byte horizontal=127;
-	
 
+	
 	public byte getHauteurInv(int hauteur, int colonne) {
 		byte masqueHauteur = 0b1111111;
+		// on retourne le byte qui concerne le pion
 		if (hauteur <= 3) {
 			masqueHauteur >>= 3 - hauteur;
 		} else {
 			masqueHauteur <<= hauteur - 3;
 		}
-		return (byte) ((getHauteur(hauteur, colonne)^vertical) & masqueHauteur);
+		return (byte) (this.hauteurInv[colonne]& masqueHauteur);
 	}
 
 
 	public byte getHorizontalInv(int hauteur, int colonne) {
-		byte masquecolonne = 0b1111111;
-		if (colonne <= 3) {
-			masquecolonne >>= 3 - colonne;
-		} else {
-			masquecolonne <<= colonne - 3;
-		};		
-		return (byte) ((getHorizontal(hauteur, colonne)^horizontal) & masquecolonne);
+		return this.horizontalInv[hauteur];
 	}
 
 
 	public byte getDiagonal1Inv(int hauteur, int colonne) {
 		byte masqueHauteur = 0b1111111;
+		// on retourne le byte qui concerne le pion
 		if (hauteur <= 3) {
 			masqueHauteur >>= 3 - hauteur;
 		} else {
 			masqueHauteur <<= hauteur - 3;
 		}
-		return (byte) ((getDiagonal1(hauteur, colonne)^masqueHauteur)& masqueHauteur);
+		return (byte) (getDiagonal1(hauteur, colonne, diagonal1Inv)& masqueHauteur);
 	}
 
 
 	public byte getDiagonal2Inv(int hauteur, int colonne) {
 		byte masqueHauteur = 0b1111111;
+		// on retourne le byte qui concerne le pion
 		if (hauteur <= 3) {
 			masqueHauteur >>= 3 - hauteur;
 		} else {
 			masqueHauteur <<= hauteur - 3;
 		}
-		return (byte) ((getDiagonal2(hauteur, colonne)^masqueHauteur)& masqueHauteur);
+		return  (byte) (getDiagonal2(hauteur, colonne, diagonal2Inv) & masqueHauteur);		
 	}
 
 }

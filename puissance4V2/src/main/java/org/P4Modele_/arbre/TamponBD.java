@@ -94,15 +94,14 @@ public class TamponBD {
 	 *            neud
 	 */
 	public void removeNeud(Neud neud) {
-		Long neudId = neud.getId();
-		if (!newNeud.remove(neud)) {
-			removeNeud.add(neudId);
+			removeNeud.add(neud.getId());
+
+
 			//System.out.println("neud suprimable"+removeNeud.size());
 //			if (removeNeud.size()>1000) {
 //				System.out.println("test");
 //				Factory.getFactory().getSynchronizationBD().synchronization(35);
 //			}
-		}
 		// ici pas d'ajout dans neudTotalModif car suppression
 		// mais il faut bien pensser avant une lecture en base a exlure ces
 		// enregistrement avec un isSupprimable

@@ -13,9 +13,6 @@
 
 
 -- Listage de la structure de la base pour puissance4v3
-DROP DATABASE IF EXISTS `puissance4v3`;
-CREATE DATABASE IF NOT EXISTS `puissance4v3` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `puissance4v3`;
 
 -- Listage de la structure de la table puissance4v3. neud
 DROP TABLE IF EXISTS `neud`;

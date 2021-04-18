@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,7 +13,7 @@ import org.P4Metier.Factory.Factory;
 import org.P4Modele_.Calculer;
 import org.P4Modele_.Neud;
 import org.P4Modele_.NeudArbre;
-import org.P4Modele_.arbre.Lien;
+import org.P4Modele_.arbre.NeudArbreBD;
 import org.P4Modele_.arbre.TamponBD;
 import org.Persistant_.ExecuteSql.ExecuteSqlDelete;
 import org.Persistant_.ExecuteSql.ExecuteSqlDeleteMultiple;
@@ -87,7 +86,8 @@ public class SqlArbre {
 					st.setLong(i, 9L);
 					i++;
 				}
-				st.setInt(19, neud.getQunatum());	
+				st.setInt(19, neud.getQuantum());	
+				((NeudArbreBD) neud).setEnBase();
 			}
 		};
 	}
@@ -111,21 +111,18 @@ public class SqlArbre {
 				for (Long enfant :neud.getEnfant()) {
 					st.setLong(i++, enfant);
 				}
-				for (;i<12;) {
-					
+				for (;i<12;i++) {
 					st.setLong(i, 9L);
-					i++;
 				}
 				//`parent1`=?,`parent2`=?,`parent3`=?,`parent4`=?,`parent5`=?,`parent6`=?,`parent7`=?
 				for (Long parent :neud.getParent()) {
 					st.setLong(i++, parent);
 				}
-				for (;i<19;) {
-					
+				for (;i<19;i++) {			
 					st.setLong(i, 9L);
-					i++;
 				}
-				st.setInt(19, neud.getQunatum());
+				st.setInt(19, neud.getQuantum());
+				((NeudArbreBD) neud).setEnBase();
 			}
 		};
 	}
@@ -160,9 +157,10 @@ public class SqlArbre {
 				for (;i<18;i++) {
 					st.setLong(i, 9L);
 				}
-				st.setInt(18, neud.getQunatum());
+				st.setInt(18, neud.getQuantum());
 				//where `idneud`=?;
 				st.setLong(19, neud.getId());
+				((NeudArbreBD) neud).setModifier(false);
 			}
 		};
 	}
@@ -225,7 +223,7 @@ public class SqlArbre {
 	 * @return neud recuperer de la base
 	 */
 	public NeudArbre getNeud(Long id) {
-		ExecuteSqlPrim<NeudArbre> neud = new ExecuteSqlPrim<>(null);
+		ExecuteSqlPrim<NeudArbreBD> neud = new ExecuteSqlPrim<>(null);
 		String sql = "SELECT `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7` FROM `neud` WHERE `idneud`=" + id + ";";
 		new ExecuteSqlSelect(cn, sql) {
 			@Override
@@ -247,11 +245,13 @@ public class SqlArbre {
 						parents.add(idParent);
 					}
 				}
-				neud.set(factory.getNeudArbreBD(parents, enfants, etat, id, calculer, niveau));
+				NeudArbreBD result=(NeudArbreBD) factory.getNeudArbreBD(parents, enfants, etat, id, calculer, niveau);
+				result.setEnBase();
+				neud.set(result);
+				
 			}
 		};
 		//TODO ici pour faire des tests rechargement complet du neud
-		
 		return neud.get();
 	}
 
@@ -311,19 +311,45 @@ public class SqlArbre {
 	 *            a partir de quelle enregistrement je lie
 	 * @return neud explorable
 	 */
-	public Collection<Long> getExplorable(int niveau, int nb, int debut) {
-		Collection<Long> result = new HashSet<>();
-		String sql = "SELECT `idneud` FROM `neud` where `etat`=3 order by `quantum` DESC LIMIT " + debut + "," + nb + ";";
-		//String sql = "SELECT `idneud` FROM `neud` where `etat`=3 and niveau="+niveau+" LIMIT " + debut + "," + nb + ";";
+	public Map<Long,NeudArbre> getExplorable(int niveau, int nb, int debut) {
+		Map<Long,NeudArbre> result = new HashMap<>();
+		String sql = "SELECT `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`,`idneud` FROM `neud` WHERE `etat`=3 order by `niveau` DESC LIMIT " + 0 + "," + 2940 + ";";
+		
 		new ExecuteSqlSelect(cn, sql) {
-
 			@Override
 			public void forEach(ResultSet rs) throws SQLException {
-				Long idneud = rs.getLong(1);
-				result.add(idneud);
+				int etat = rs.getInt(1);
+				Calculer calculer = Calculer.GetValue(rs.getInt(2));
+				int niveau = rs.getInt(3);
+				Set<Long> parents = new HashSet<>();
+				Set<Long> enfants = new HashSet<>();
+				Long idEnfant;
+				Long idParent;
+				for (int i = 0; i < 7; i++) {
+					idEnfant = rs.getLong(i + 4);
+					idParent = rs.getLong(i + 11);
+					if (idEnfant != 9L) {
+						enfants.add(idEnfant);
+					}
+					if (idParent != 9L) {
+						parents.add(idParent);
+					}
+				}
+				long id = rs.getLong(18);
+				NeudArbreBD neudTemp = (NeudArbreBD) factory.getNeudArbreBD(parents, enfants, etat, id, calculer,
+						niveau);
+				neudTemp.setEnBase();
+				result.put(id, neudTemp);
 			}
 		};
+
 		return result;
+		
+		
+		
+		
+		
+		
 	}
 
 	/**
@@ -337,7 +363,7 @@ public class SqlArbre {
 	 * @return neud explorable
 	 */
 
-	public Collection<Long> getExplorable(int niveau, int nb) {
+	public Map<Long,NeudArbre> getExplorable(int niveau, int nb) {
 		return getExplorable(niveau, nb, 0);
 	}
 
@@ -437,18 +463,39 @@ public class SqlArbre {
 		return result;
 	}
 	
-	public Collection<Long> getExplorable1(int niveau, int nb) {
-		Collection<Long> result = new HashSet<>();
-		String sql = "SELECT `idneud` FROM `neud` WHERE `etat`="+3+" and `niveau`="
+	public Map<Long,NeudArbre> getExplorable1(int niveau, int nb) {
+		Map<Long,NeudArbre> result = new HashMap<>();
+		String sql = "SELECT `etat`,`calculer`,`niveau`,`enfant1`,`enfant2`,`enfant3`,`enfant4`,`enfant5`,`enfant6`,`enfant7`,`parent1`,`parent2`,`parent3`,`parent4`,`parent5`,`parent6`,`parent7`,`idneud` FROM `neud` WHERE `etat`="+3+" and `niveau`="
 				+ niveau + " LIMIT "  + nb + ";";
+		
 		new ExecuteSqlSelect(cn, sql) {
-
 			@Override
 			public void forEach(ResultSet rs) throws SQLException {
-				Long idneud = rs.getLong(1);
-				result.add(idneud);
+				int etat = rs.getInt(1);
+				Calculer calculer = Calculer.GetValue(rs.getInt(2));
+				int niveau = rs.getInt(3);
+				Set<Long> parents = new HashSet<>();
+				Set<Long> enfants = new HashSet<>();
+				Long idEnfant;
+				Long idParent;
+				for (int i = 0; i < 7; i++) {
+					idEnfant = rs.getLong(i + 4);
+					idParent = rs.getLong(i + 11);
+					if (idEnfant != 9L) {
+						enfants.add(idEnfant);
+					}
+					if (idParent != 9L) {
+						parents.add(idParent);
+					}
+				}
+				long id = rs.getLong(19);
+				NeudArbreBD neudTemp = (NeudArbreBD) factory.getNeudArbreBD(parents, enfants, etat, id, calculer,
+						niveau);
+				neudTemp.setEnBase();
+				result.put(id, neudTemp);
 			}
 		};
+
 		return result;
 	}
 }

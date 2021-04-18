@@ -1,6 +1,5 @@
 package org.P4Modele_;
 
-import java.util.Set;
 
 public interface NeudArbre extends Neud {
 
@@ -14,7 +13,7 @@ public interface NeudArbre extends Neud {
 	 * @param calculer
 	 *            the calculer to set
 	 */
-	void setCalculer(Calculer calculer);
+	boolean setCalculer(Calculer calculer);
 
 	/**
 	 * @param niveau
@@ -26,7 +25,7 @@ public interface NeudArbre extends Neud {
 	 * @param explorable
 	 *            the explorable to set
 	 */
-	void setExplorable(boolean explorable);
+	boolean setExplorable(boolean explorable);
 
 	/**
 	 * ajoute un parent au neud
@@ -34,7 +33,7 @@ public interface NeudArbre extends Neud {
 	 * @param newParent
 	 *            parent a ajouter
 	 */
-	void addParent(long newParent);
+	boolean addParent(long newParent);
 
 	/**
 	 * ajoute un enfant au neud
@@ -42,7 +41,7 @@ public interface NeudArbre extends Neud {
 	 * @param newEnfant
 	 *            enfant a ajouter
 	 */
-	void addEnfant(long newEnfant);
+	boolean addEnfant(long newEnfant);
 
 	/**
 	 * enleve un parent a enlever
@@ -50,7 +49,7 @@ public interface NeudArbre extends Neud {
 	 * @param oldParent
 	 *            parent a enlever
 	 */
-	void removeParent(Long oldParent);
+	boolean removeParent(Long oldParent);
 
 	/**
 	 * enleve un enfant oldEnfant
@@ -58,29 +57,14 @@ public interface NeudArbre extends Neud {
 	 * @param oldEnfant
 	 *            enfant a enlever
 	 */
-	void removeEnfant(Long oldEnfant);
+	boolean removeEnfant(Long oldEnfant);
 
 	/**
 	 * affecte la valeur feuille
 	 *
 	 * @param boolean1
 	 */
-	void setFeuille(boolean boolean1);
-
-	/**
-	 * modifie la liste des parents au neud
-	 *
-	 * @param Parent
-	 *            list des parents (complette)
-	 */
-	void addParent(Set<Long> parent);
-
-	/**
-	 * modifie la liste des enfants au neud
-	 *
-	 * @param enfant
-	 *            list des enfant (complette)
-	 */
-	void addEnfant(Set<Long> enfant);
+	boolean setFeuille(boolean boolean1);
+	
 
 }

@@ -28,14 +28,16 @@ public class GagneeTabByte implements Gagnee {
 		int hauteur = donnee.getNbPionColonne(colonne);
 		int gagnee = 0;
 		byte test;
-		test = byteTableauJoueur.getHauteur(hauteur - 1, colonne);
-		gagnee += test(test);
-		test = byteTableauJoueur.getHorizontal(hauteur - 1, colonne);
-		gagnee += test(test);
-		test = byteTableauJoueur.getDiagonal1(hauteur - 1, colonne);
-		gagnee += test(test);
-		test = byteTableauJoueur.getDiagonal2(hauteur - 1, colonne);
-		gagnee += test(test);
+		if (hauteur > 0) {
+			test = byteTableauJoueur.getHauteur(hauteur - 1, colonne);
+			gagnee += test(test);
+			test = byteTableauJoueur.getHorizontal(hauteur - 1, colonne);
+			gagnee += test(test);
+			test = byteTableauJoueur.getDiagonal1(hauteur - 1, colonne);
+			gagnee += test(test);
+			test = byteTableauJoueur.getDiagonal2(hauteur - 1, colonne);
+			gagnee += test(test);
+		}
 		if (gagnee > 0) {
 			return true;
 		}

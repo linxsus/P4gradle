@@ -2,8 +2,11 @@ package org.P4Modele_.arbre;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
+import org.P4Metier.Factory.Factory;
 import org.P4Modele_.Neud;
+import org.P4Modele_.NeudArbre;
 
 /**
  * 
@@ -42,7 +45,7 @@ public class CopyTampon {
 	 * @return the newNeud
 	 */
 	public Collection<Neud> getNewNeud() {
-		newNeud.removeIf(n -> (n.isSupprimable()));
+		//newNeud.removeIf(n -> (n.isSupprimable()));
 		return newNeud;
 	}
 
@@ -75,6 +78,23 @@ public class CopyTampon {
 	}
 
 	private void MiseAjourTempon() {
+		newNeud = new HashSet<>(50000);
+		editNeud = new HashSet<>(50000);
+		Factory factory = Factory.getFactory();
+		if (factory != null) {
+			for (NeudArbre neud : factory.getMapArbre().values()) {
+				NeudArbreBD neudBD = (NeudArbreBD) neud;
+				if (!neudBD.getEnBase()) {
+					newNeud.add(neudBD);
+				} else {
+					if (neudBD.getModifier()) {
+						editNeud.add(neudBD);
+					}
+				}
+			}
+		}
+		
+		
 		// on recupere les lien suprimer et on vide le tampon
 //		removeLien = tampon.getRemoveLien();
 //		tampon.initRemoveLien();
@@ -85,13 +105,11 @@ public class CopyTampon {
 		removeNeud = tampon.getRemoveNeud();
 		tampon.initRemoveNeud();
 		// on recupere les nouveau neud et on vide le tampon
-		newNeud = tampon.getNewNeud();
 		tampon.initNewNeud();
 		// on recupere les nouveau lien et on vide le tampon
 //		newLien = tampon.getNewLien();
 //		tampon.initNewLien();
 		// on recupere les neud modifier et on vide le tampon
-		editNeud = tampon.getEditNeud();
 		tampon.initEditNeud();
 	}
 }

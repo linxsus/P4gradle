@@ -8,10 +8,12 @@ import org.P4Metier.Gagnee;
 import org.P4Metier.GestIdDonnee;
 import org.P4Metier.Ordinateur;
 import org.P4Metier.Factory.Factory;
+import org.P4Metier.id.GestIdDonneeLong;
 import org.P4Modele_.Arbre;
 import org.P4Modele_.Calculer;
 import org.P4Modele_.GestDonnee;
 import org.P4Modele_.Neud;
+import org.P4Modele_.NeudArbre;
 
 /**
  * @author Xavier Gouraud
@@ -26,6 +28,7 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 	protected Gagnee gagnee;
 	protected Factory factory;
 	protected Arbre arbre;
+	protected long tron;
 
 	/**
 	 * creation de la class avec comme donnee donnee
@@ -37,30 +40,22 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 		super();
 		this.factory = factory;
 		this.donnee = donnee;
-		long tron = donnee.getIdBaseDonnee();
+		this.tron = donnee.getIdBaseDonnee();
+		NeudArbre neud = factory.getMapArbre().get(donnee.getIdBaseDonnee());
+		//si le neud tron n'existe pas je le cree
+		if (neud == null) {
+			neud = factory.getNeudArbre(donnee);
+			factory.getMapArbre().put(tron, neud);
+		}
+		
 		arbre = factory.getArbre();
 		gagnee = factory.getGagnee();
-		arbre.setTron(tron, donnee.getNbPionJouer());
+		//if (tron!=0) {
+		//arbre.setTron((GestIdDonneeLong) donnee, donnee.getNbPionJouer());
+		//}
 	}
 
-	// /**
-	// * creation de la class avec comme donnee donnee et mettre le boolean a true
-	// * pour utiliser mysql.
-	// *
-	// * @param donnee
-	// * Donnee
-	// * @param mysql
-	// * boolean
-	// * @param tourMax
-	// * int
-	// */
-	// public OrdinateurArbre(GestBaseDonnee donnee, boolean mysql, int tourMax) {
-	// super();
-	// this.donnee = donnee;
-	// this.mysql = mysql;
-	// this.tourMax = tourMax;
-	// }
-
+	
 	/**
 	 * retourn la colone a jouer pour les donnee donnee !!! reinitialise les donnee
 	 * lors de la creation !!!
@@ -93,78 +88,65 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 	 */
 	@Override
 	public int jouer() {
-		Gagnee gagnee = factory.getGagnee();
-		//boolean miroire = donnee.isMiroire();
-		//HashMap<Integer, Long> resultatColonne = new HashMap<>();
-		//int niveauInitial = 42;
 		int niveauInitial = donnee.getNbPionJouer();
 		int niveau = niveauInitial;
 		long idParent = 0;
-		long idEnfant = 0;
 		Neud next;
 		GestIdDonnee<Long> donneeTravaille;
 		int niveauMax = niveauInitial + tourMax;
-		// je recupere l'id actuelle
-		long tron = donnee.getIdBaseDonnee();
 		// je lui affecte le tron
-		arbre.setTron(tron, niveauInitial);
-		boolean ok=false;
+		this.tron= donnee.getIdBaseDonnee();
+		//si le neud tron n'existe pas je le cree
+		NeudArbre neud = factory.getMapArbre().get(donnee.getIdBaseDonnee());
+		if (neud == null) {
+			neud = factory.getNeudArbre(donnee);
+			factory.getMapArbre().put(tron, neud);
+		}
+		
+		
+		
+		boolean ok = false;
 		while (!ok) {
 			// je recupere le neud suivant explorable
 			next = arbre.nextExplorable(niveau);
 			if (next == null) {
-				//niveau--;
+				//TODO a refaire car la notion de niveau n'existe pas ou est a definir autre part
+				// niveau--;
 				niveau++;
-				//if (niveau ==0) {
-				if (niveau ==niveauMax) {	
-					ok=true;
+				if (niveau == niveauMax) {
+					ok = true;
 				}
-				if (arbre.getNeud(tron).getCalculer()!=Calculer.NONCALCULER) {
+				if (arbre.getNeud(tron).getCalculer() != Calculer.NONCALCULER) {
 					next = arbre.nextExplorable(niveau);
-					ok=true;
+					// ok=true;
+					//TODO lancer une synchro
 				}
 			} else {
-				
-				//System.out.print(" "+next.getId());
-				
-				//TODO next.getId() puis donneeTravaille.getIdBaseDonnee() pourquoi recalculer l'id??
+
+				// System.out.print(" "+next.getId());
+
+				// TODO next.getId() puis donneeTravaille.getIdBaseDonnee() pourquoi recalculer
+				// l'id??
 				// je recupere le neud de travaille
 				donneeTravaille = donnee.newBaseDonneeId(next.getId());
 				idParent = donneeTravaille.getIdBaseDonnee();
 				// pour toute les possibilter du neud
-				int[] colonnes = donneeTravaille.getColoneJouable();
-				boolean Gagner = false;
-				//TODO il faut enlever le && nonGagner pour devalider les autre possibiliter
-				for (int i = 0; (i < colonnes.length) && !Gagner; i++) {
-					// j'ajoute le pion
-					donneeTravaille.ajoutPion(colonnes[i] + 1);
-					idEnfant = donneeTravaille.getIdBaseDonnee();
-					// je sauvegade le lien colonne,enfant que pour le niveau initial pour faire calculer
-					/*
-					if (niveau == niveauInitial) {
-						resultatColonne.put(colonnes[i], idEnfant);
-					}
-					*/
-					Neud enfant = arbre.addEnfant(idParent, idEnfant);
-					// si j'ai gagnee je renseigne l'arbre
-					if ((enfant.getCalculer() == Calculer.GAGNER) || gagnee.isGagnee(donneeTravaille)) {
-						arbre.setCalculer(idEnfant, Calculer.GAGNER);
-						// j'ai gagner inutil de calculer les autre possibilité.
-						Gagner = true;
-					}
-					donneeTravaille.enleverPion();
+				for (int i :donneeTravaille.getColoneJouable()) {
+					// j'ajoute le pion au jeux
+					donneeTravaille.ajoutPion(i + 1);
+					//j'ajoute le resultat au map en tant qu'enfant du jeux que je teste
+					 arbre.addEnfant(idParent, (GestIdDonneeLong) donneeTravaille);
+					// j'enleve le pion pour revenir a l'etat du jeux que je veux tester  
+					 donneeTravaille.enleverPion();
 				}
+				//je calcule le resultat du neud que je vien traiter
+				arbre.calculer(idParent);
+				//TODO devrait etre dans le neud
 				arbre.setExplorableFalse(idParent);
 			}
 		}
+		// je calcul et je retourne la colonne a jouer 
 		return calculer();
-		/*
-		if (miroire) {
-			return (GestDonnee.LARGEUR - (calculer(resultatColonne, arbre) - 1));
-		} else {
-			return calculer(resultatColonne, arbre);
-		}
-		*/
 	}
 
 	@Override
@@ -193,6 +175,7 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 		long[] egaliterTab = new long[GestDonnee.LARGEUR];
 		Calculer enfantCalculer;
 		
+		//TODO pourquoi le if  (nbEnfant > 0) alors que le for devrais le faire
 		int nbEnfant=arbre.getNeud(donnee.getIdBaseDonnee()).getEnfant().size();
 		
 		// si il y a des enfant
@@ -251,9 +234,9 @@ public class OrdinateurArbre implements Ordinateur<Long> {
 		}
 		
 		if (donnee.isMiroire()) {
-			return (GestDonnee.LARGEUR - (difLong(arbre.getTron(),resultat)));
+			return (GestDonnee.LARGEUR - (difLong(tron,resultat)));
 		} else {
-			return difLong(arbre.getTron(),resultat) + 1;
+			return difLong(tron,resultat) + 1;
 		}
 	}
 

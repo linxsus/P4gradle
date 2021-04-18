@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.P4Metier.Factory.Factory;
 import org.P4Modele_.GestDonnee;
-import org.quantum.ByteTableauJoueurQuantum;
 
 public class GestDonneeTabByte  implements GestDonnee {
 
@@ -146,7 +145,11 @@ public class GestDonneeTabByte  implements GestDonnee {
 	 */
 	@Override
 	public ByteTableauJoueur getByteTableauJoueur() {
-		return byteTableauJoueur[getPrecedent() - 1];
+		int precedent=getPrecedent();
+		//if (precedent==0) {
+		return byteTableauJoueur[precedent - 1];
+//		}
+//		return  byteTableauJoueur[0];
 	}
 
 	@Override

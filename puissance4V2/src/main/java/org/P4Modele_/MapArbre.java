@@ -21,7 +21,7 @@ public interface MapArbre extends Map<Long, NeudArbre> {
 	 *
 	 * @see java.util.Map#size()
 	 */
-	@Deprecated
+
 	@Override
 	abstract int size();
 
@@ -107,7 +107,6 @@ public interface MapArbre extends Map<Long, NeudArbre> {
 	 *
 	 * @see java.util.Map#values()
 	 */
-	@Deprecated
 	@Override
 	abstract Collection<NeudArbre> values();
 

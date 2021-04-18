@@ -3,11 +3,14 @@ package org.P4Modele_.arbre;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.P4Metier.Gagnee;
 import org.P4Metier.Factory.Factory;
 import org.P4Metier.id.GestIdDonneeLong;
 import org.P4Modele_.Calculer;
+import org.P4Modele_.MapArbre;
 import org.P4Modele_.Neud;
 import org.P4Modele_.NeudArbre;
+import org.P4Modele_.map.MapArbreBD;
 import org.quantum.GestDonneeTabByteQuantum;
 
 /**
@@ -17,14 +20,15 @@ import org.quantum.GestDonneeTabByteQuantum;
 //TODO
 public class NeudArbreBasic implements Neud, NeudArbre {
 	
+	private MapArbre mapArbre;
 	protected Set<Long> parent = new HashSet<>();
 	protected Set<Long> enfant = new HashSet<>();
     protected final byte FEUILLE = 0b001;
     protected final byte EXPLORABLE = 0b010;
-    protected final byte SUPPRIMABLE = 0b100;
     protected final byte TRON = 0b1000;
+    protected final byte SUPPRIMABLE = 0b100;
     
-	protected byte etat=3;
+	protected byte etat=3; //par default une feuille explorable
 	protected long id;
 	protected Calculer calculer = Calculer.NONCALCULER;
 	protected int niveau;
@@ -35,12 +39,10 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @param id
 	 * @param parent
 	 */
-	public NeudArbreBasic(Factory factory, long id, Neud parent) {
+	public NeudArbreBasic(Factory factory, GestIdDonneeLong base, Neud parent) {
 		super();
-		this.factory = factory;
 		this.parent.add(parent.getId());
-		this.id = id;
-		niveau = parent.getNiveau() + 1;
+		init(factory,base);
 	}
 
 	/**
@@ -50,10 +52,9 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @param id
 	 *            l'id du neud a cree
 	 */
-	public NeudArbreBasic(Factory factory, long id) {
+	public NeudArbreBasic(Factory factory, GestIdDonneeLong base) {
 		super();
-		this.factory = factory;
-		this.id = id;
+		init(factory,base);
 		//TODO on devrait calculer le niveau
 	}
 
@@ -62,17 +63,37 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	public NeudArbreBasic(Factory factory) {
 		super();
-		this.factory = factory;
-		id = 0L;
-		niveau = 0;
+		init(factory,(GestIdDonneeLong) factory.getGestIDDonnee());
 	}
 
-	public NeudArbreBasic(Factory factory, long id, int niveau) {
-		super();
+//	public NeudArbreBasic(Factory factory, long id, int niveau) {
+//		super();
+//		init(factory,id);
+//
+//	}
+	
+	protected void init(Factory factory,GestIdDonneeLong base) {
 		this.factory = factory;
-		this.id = id;
-		this.niveau = niveau;
+		this.mapArbre= factory.getMapArbre();
+		this.id = base.getIdBaseDonnee();
+//		GestIdDonneeLong base=(GestIdDonneeLong) factory.getGestIDDonnee();
+//		base.setIdBaseDonnee(id);
+		int niveau=base.getNbPionJouer();
+		Gagnee gagnee=factory.getGagnee();
+		if (id != 0) {
+			
+			if (gagnee.isGagnee(base)) {
+				setCalculer(Calculer.GAGNER);
 
+			}else {
+				if (niveau==42) {
+					setCalculer(Calculer.EGALITER);
+				}
+			}
+			;
+		}
+		
+		this.niveau = niveau;
 	}
 
 	/*
@@ -106,8 +127,15 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @see org.P4Arbre.NeudArbre#setCalculer(org.P4Arbre.Calculer)
 	 */
 	@Override
-	public void setCalculer(Calculer calculer) {
-		this.calculer = calculer;
+	public boolean setCalculer(Calculer calculer) {
+		if (this.calculer != calculer) {
+			if (calculer != Calculer.NONCALCULER) {
+				setExplorable(false);
+			}
+			this.calculer = calculer;
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -162,7 +190,8 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public Set<Long> getParent() {
-		return new HashSet<>(parent);
+		//parent.toArray();
+		return parent;
 	}
 
 	/*
@@ -177,7 +206,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public Set<Long> getEnfant() {
-		return new HashSet<>(enfant);
+		return enfant;
 	}
 
 	/*
@@ -192,10 +221,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public boolean isFeuille() {
-		if ((etat & FEUILLE) == FEUILLE) {
-			return true;
-		}
-		return false;
+		return ((etat & FEUILLE) == FEUILLE);
 	}
 
 	/*
@@ -229,10 +255,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 */
 	@Override
 	public boolean isExplorable() {
-		if ((etat & EXPLORABLE) == EXPLORABLE) {
-			return true;
-		}
-		return false;
+		return ((etat & EXPLORABLE) == EXPLORABLE);
 	}
 
 	/*
@@ -241,13 +264,16 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @see org.P4Arbre.NeudArbre#setExplorable(boolean)
 	 */
 	@Override
-	public void setExplorable(boolean explorable) {
-		if (explorable) {
-			etat = (byte) (etat | EXPLORABLE);	
-		}else {
-			etat = (byte) (etat & (~EXPLORABLE));
+	public boolean setExplorable(boolean explorable) {
+		if (explorable != isExplorable()) {
+			if (explorable) {
+				etat = (byte) (etat | EXPLORABLE);
+			} else {
+				etat = (byte) (etat & (~EXPLORABLE));
+			}
+			return true;
 		}
-		
+		return false;
 	}
 
 	/*
@@ -256,11 +282,12 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @see org.P4Arbre.NeudArbre#addParent(long)
 	 */
 	@Override
-	public void addParent(long newParent) {
-		if (isSupprimable()) {
-			etat=3; // attention en cas de tron .... (mais normalement un tron n'est pas supprimable)
- 		}
-		parent.add(newParent);
+	public boolean addParent(long newParent) {
+		if (parent.add(newParent)) {
+			mapArbre.get(newParent).addEnfant(id);
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -269,9 +296,13 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @see org.P4Arbre.NeudArbre#addEnfant(long, int)
 	 */
 	@Override
-	public void addEnfant(long newEnfant) {
-		enfant.add(newEnfant);
-		setFeuille(false);
+	public boolean addEnfant(long newEnfant) {
+		if (enfant.add(newEnfant)) {
+			mapArbre.get(newEnfant).addParent(id);
+			setFeuille(false);
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -280,17 +311,19 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @see org.P4Arbre.NeudArbre#removeParent(java.lang.Long)
 	 */
 	@Override
-	public void removeParent(Long oldParent) {
+	public boolean removeParent(Long oldParent) {
 		// je suprime le parent
 		if (parent.remove(oldParent)) {
-		// je doit suprimer aussi le lien dans le parent
-		factory.getMapArbre().get(oldParent).removeEnfant(id);
-		};
-		//si il n'y a plus de parent et que ce n'est pas le tron  alor le neud est supprimable
-		if ((parent.size()==0) && (calculer==Calculer.NONCALCULER) && (!isTron())) {
-			setSupprimable(true);
+			// je doit suprimer aussi le lien dans le parent
+			mapArbre.get(oldParent).removeEnfant(id);
+			// si il n'y a plus de parent et que ce n'est pas calculer alor le neud est
+			// supprimable
+			if ((parent.size() == 0) && (calculer == Calculer.NONCALCULER)) {
+				setSupprimable(true);
+			}
+			return true;
 		}
-		
+		return false;
 	}
 
 	/*
@@ -299,12 +332,14 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	 * @see org.P4Arbre.NeudArbre#removeEnfant(java.lang.Long)
 	 */
 	@Override
-	public void removeEnfant(Long oldEnfant) {
+	public boolean removeEnfant(Long oldEnfant) {
 		// je suprime le lien enfant
 		if (enfant.remove(oldEnfant)) {
 		// je doit suprimer aussi le lien dans l'enfant
-			factory.getMapArbre().get(oldEnfant).removeParent(id);
+			mapArbre.get(oldEnfant).removeParent(id);
+			return true;
 		}
+		return false;
 	}
 
 	/*
@@ -325,8 +360,7 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	@Override
 	public String toString() {
 		String str;
-		str="Neud [parent=" + parent + ", enfant=" + enfant + ", feuille=" + isFeuille() + ", explorable=" + isExplorable()+", supprimable="+isSupprimable()
-				+ ", id=" + id + ", calculer=" + calculer + ", niveau=" + niveau + "]\n"+new GestIdDonneeLong(factory).getDonneeId(id);
+		str="Neud [parent=" + parent + ", enfant=" + enfant + ", feuille=" + isFeuille() + ", explorable=" + isExplorable()+ ", id=" + id + ", calculer=" + calculer + ", niveau=" + niveau +", Quantum "+ getQuantum() + "]\n"+new GestIdDonneeLong(factory).getDonneeId(id);
 		str+="parent \n";
 		for (Long temp : getParent()) {
 			str+=new GestIdDonneeLong(factory).getDonneeId(temp)+" "+temp+"\n";
@@ -343,13 +377,16 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 	}
 
 	@Override
-	public void setFeuille(boolean feuille) {
-		if (feuille) {
-			etat = (byte) (etat | FEUILLE);	
-		}else {
-			etat = (byte) (etat & (~FEUILLE));
+	public boolean setFeuille(boolean feuille) {
+		if (feuille != isFeuille()) {
+			if (feuille) {
+				etat = (byte) (etat | FEUILLE);
+			} else {
+				etat = (byte) (etat & (~FEUILLE));
+			}
+			return true;
 		}
-
+		return false;
 	}
 
 	/*
@@ -388,55 +425,18 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		return true;
 	}
 
-	@Override
-	public void addParent(Set<Long> parent) {
-		if (!isTron()) {
-			if ((parent.size() == 0)) {
-				setSupprimable(true);
-			} else {
-				// si le neud est supprimable et qu'on lui rajoute des parent il n'est plus
-				// supprimable
-				if (isSupprimable()) {
-					etat = 3; // on le definit comme feuille et explorable c'est une recreation du neud
-				}
-			}
-		}
-		this.parent = parent;
-
-	}
-
-	@Override
-	public void addEnfant(Set<Long> enfant) {
-		this.enfant = enfant;
-
-	}
-
-	@Override
-	public boolean isSupprimable() {
-		if ((etat & SUPPRIMABLE) == SUPPRIMABLE) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isSupprimable(int niveau) {
-		if (this.niveau <= niveau) {
-			return isSupprimable();
-		} else {
-			return false;
-		}
-	}
 
 	
-	protected void setSupprimable(boolean supprimable ) {
-		
-		if (supprimable && !isTron()) {
-			etat = SUPPRIMABLE;	// si il est supprimable il n'est que supprimable
-		}else {
-			etat = (byte) (etat & (~SUPPRIMABLE));
-		}
-		
+	protected boolean setSupprimable(boolean supprimable) {	
+			if (supprimable) {
+				removeAllEnfant();
+				etat = (byte) (etat | SUPPRIMABLE);
+				mapArbre.remove(getId());
+			} else {
+				setExplorable(true);
+				etat = (byte) (etat & (~SUPPRIMABLE));
+			}
+			return true;
 	}
 
 	@Override
@@ -444,27 +444,43 @@ public class NeudArbreBasic implements Neud, NeudArbre {
 		return etat;
 	}
 
-	@Override
-	public void setTron(boolean tron) {
-//		if (tron) {
-//			etat = (byte) (etat | TRON);	
-//		}else {
-//			etat = (byte) (etat & (~TRON));
+//	@Override
+//	public boolean setTron(boolean tron) {
+////		if (tron != isTron()) {
+////			if (tron) {
+////				etat = (byte) (etat | TRON);
+////			} else {
+////				etat = (byte) (etat & (~TRON));
+////			}
+////			return true;
+////		}
+//		return false;
+//	}
+
+//	@Override
+//	public boolean isTron() {
+//		if ((etat & TRON) == TRON) {
+//			return true;
 //		}
-		
-	}
+//		return false;
+//	}
 
 	@Override
-	public boolean isTron() {
-		if ((etat & TRON) == TRON) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public int getQunatum() {
+	public int getQuantum() {
+		if (isExplorable()) {
 		GestDonneeTabByteQuantum result= (GestDonneeTabByteQuantum)((GestIdDonneeLong) factory.getGestIDDonnee()).getDonneeId(id);
 		return result.calcQuantum();
+		}
+		return 0;
+	}
+	
+	protected void removeAllEnfant() {
+		for (long enfant : new HashSet<>(enfant)) {
+			removeEnfant(enfant);
+		} 
+	}
+	
+	public void setMapArbre(MapArbreBD mapArbreBD) {
+		this.mapArbre = mapArbreBD;
 	}
 }

@@ -1,22 +1,24 @@
 package org.P4Modele_;
 
+import org.P4Metier.id.GestIdDonneeLong;
+
 public interface Arbre {
 
-	/**
-	 * retourn le tron si il n'existe pas le cree
-	 *
-	 * @return the tron
-	 */
-	long getTron();
+//	/**
+//	 * retourn le tron si il n'existe pas le cree
+//	 *
+//	 * @return the tron
+//	 */
+//	long getTron();
 
-	/**
-	 * initilaise le tron avec l'id. avant de l'affecter on verifie que le neud
-	 * existe sinon on le cree.
-	 *
-	 * @param tron
-	 *            the tron to set
-	 */
-	Neud setTron(Long tron, int niveau);
+//	/**
+//	 * initilaise le tron avec l'id. avant de l'affecter on verifie que le neud
+//	 * existe sinon on le cree.
+//	 *
+//	 * @param tron
+//	 *            the tron to set
+//	 */
+//	Neud setTron(GestIdDonneeLong tron, int niveau);
 
 	/*
 	 * (non-Javadoc)
@@ -31,10 +33,9 @@ public interface Arbre {
 	 *
 	 * @param idCalculer
 	 *            the id for set calculer
-	 * @param calculer
-	 *            the calculer to set
+	 * 
 	 */
-	void setCalculer(Long idCalculer, Calculer calculer);
+	void calculer(Long idCalculer);
 
 	/**
 	 * ajout un lien enfant parent fournit en parametre
@@ -44,7 +45,7 @@ public interface Arbre {
 	 * @param enfant
 	 *            l'enfant du lien
 	 */
-	Neud addEnfant(Long parent, Long enfant);
+	Neud addEnfant(Long parent, GestIdDonneeLong enfant);
 
 	/**
 	 * mise a false de explorable du neud l
@@ -73,5 +74,6 @@ public interface Arbre {
 	Neud getNeud(Long id);
 
 	void setExplorableFalse(long id);
+
 
 }

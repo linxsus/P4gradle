@@ -4,22 +4,20 @@
 package org.P4Modele_.map;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.PriorityQueue;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.P4Metier.Factory.Factory;
 import org.P4Metier.arbre.SynchronizationBD;
 import org.P4Modele_.MapArbre;
-import org.P4Modele_.Neud;
 import org.P4Modele_.NeudArbre;
 import org.P4Modele_.arbre.NeudArbreBD;
 import org.P4Modele_.arbre.TamponBD;
@@ -47,10 +45,11 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 	
 	
 	// mini 20*SynchronizationBD.NBEXPLORABLEMAX;
-	protected final static int maxEnregistrement = 100 * SynchronizationBD.NBEXPLORABLEMAX;
+	public final static int MAX_NEUD = 2000000;
+	//public final static int MAX_NEUD = 20000;
 	protected LinkedList<Long> idsExplorable;
 
-	protected Collection<Long> mapExplorable;
+	protected PriorityQueue<NeudArbre> mapExplorable;
 	
 	protected Map<Long, NeudArbre> mapSupprimable;
 
@@ -60,22 +59,47 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 
 	private SqlArbre sqlArbre;
 	protected Factory factory;
-	protected TamponBD tampon;
+	//protected TamponBD tampon;
 	protected SynchronizationBD synchro;
 
 	protected void init(Factory factory) {
+		Comparator<NeudArbre> compNeud = new Comparator<NeudArbre>() {
+
+			@Override
+			public int compare(NeudArbre o1, NeudArbre o2) {
+				if (o1.getNiveau() - o2.getNiveau() == 0) {
+					if (o1.getQuantum() - o2.getQuantum() == 0) {
+						if (o1.getId() - o2.getId() > 0) {
+							return -1;
+						} else {
+							return 1;
+						}
+					} else {
+						if (o1.getQuantum() - o2.getQuantum() > 0) {
+							return -1;
+						}
+					}
+					return 1;
+				} else {
+					if (o1.getNiveau() - o2.getNiveau() > 0) {
+						return -1;
+					}
+				}
+				return 1;
+			}
+		};
 		this.factory = factory;
 		sqlArbre = factory.getMysqlArbre();
-		tampon = factory.getTampon();
+		//tampon = factory.getTampon();
 		synchro = factory.getSynchronizationBD();
 
 		idsExplorable = new LinkedList<>();
-		mapExplorable = new HashSet<>(SynchronizationBD.NBEXPLORABLEMAX);
+		mapExplorable = new PriorityQueue<NeudArbre>(SynchronizationBD.NBEXPLORABLEMAX,compNeud);
 		mapSupprimable = new HashMap<>(SynchronizationBD.NBEXPLORABLEMAX);
 	}
 
 	public MapArbreBD(Factory factory) {
-		super(maxEnregistrement);
+		super(MAX_NEUD);
 		init(factory);
 	}
 
@@ -131,14 +155,15 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 	public NeudArbre put(Long key, NeudArbre value) {
 		// TamponBD.addNeud(value); // onle fait deja dans le constructeur Neud
 		((NeudArbreBD) value).setMapArbre(this);
+		mapExplorable.offer(value);
 		return super.put(key, value);
 	}
 
-	public NeudArbre Update(Long key, NeudArbre value) {
-		// TamponBD.addNeud(value); // onle fait deja dans le constructeur Neud
-		super.remove(key);
-		return super.put(key, value);
-	}
+//	public NeudArbre Update(Long key, NeudArbre value) {
+//		// TamponBD.addNeud(value); // onle fait deja dans le constructeur Neud
+//		super.remove(key);
+//		return super.put(key, value);
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -147,9 +172,18 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 	 */
 	@Override
 	public NeudArbre remove(Object key) {
-		NeudArbre result = super.remove(key);
+		NeudArbre result = super.remove(key);		
 		if (result != null) {
-			((NeudArbre) key).addParent(new HashSet<>());
+			mapExplorable.remove(result);
+			if (result.getParent().size()!=0) {
+				System.out.println("erreur supression");
+				System.exit(0);
+			};
+			if (result.getEnfant().size()!=0) {
+				System.out.println("erreur supression");
+				System.exit(0);
+			};
+		
 		}
 
 		return result;
@@ -157,29 +191,28 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 
 	@Override
 	public NeudArbre nextExplorable(int niveau) {
-		NeudArbre neud = null;
+		NeudArbreBD neud = null;
+		// si on a depasser le max du map
+		if (size()>MAX_NEUD)
+			{
+			//on rechage les explorable ce qui va reinitialiser le map	
+			loadMapExplorable(niveau);
+			System.out.print("tampon plein :"+ mapExplorable.size()+" quantum "+mapExplorable.peek().getQuantum());
+			}
 		do {
-			if (idsExplorable.isEmpty()) {
-
+			if (mapExplorable.isEmpty()) {
+				
 				// on recupere de la partie synchronisation le map ids,neud des explorables
 				// attention cette liste n'est pas jour il peut y a voir dans cette liste des
-				// neud supprimer ou déja calculer
-				mapExplorable = synchro.synchronization(niveau);
-				try {
-					if (System.in.available()>0) {
-					System.exit(0);;
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// neud supprimer ou déja calculer	
+					loadMapExplorable(niveau);
+					System.out.print("\n rechargement dans la base des explorable :" + mapExplorable.size()+" quantum "+mapExplorable.peek().getQuantum());
 				// on insert dans la queu les nouveaux id explorable
-				idsExplorable.addAll(mapExplorable);
 				// System.out.print(" size " + size() + " "); // TODO permet de verifier que
 				// l'on ne fait pas de fuite
 				// // memoire a supprimer des que possible
 				// si il n'y a plus rien d'explorable
-				if (idsExplorable.isEmpty()) {
+				if (mapExplorable.isEmpty()) {
 					return null;
 
 				}
@@ -187,9 +220,12 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 			}
 			// TODO affichage de suivit a supprimer
 			// tous les 500 explorable
-			if ((nbtour % 500) == 0) {
-				System.out.print(".");
+			if ((nbtour % 1500) == 0) {
 				
+				if ((nbtour % 150000) == 0) {
+					System.out.println("");
+				}
+				System.out.print(".");
 				//System.out.print("\n neud supprimer : "+ neudSupprimer +" neud calculer : " + neudCalculer);
 				//neudSupprimer=0;
 				//neudCalculer=0;
@@ -198,7 +234,7 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 
 			// resinchronisation (on rechage l'explorable et on verifie si c'est toujours un
 			// explorable)
-			neud = get(idsExplorable.pollLast());
+			neud = (NeudArbreBD) mapExplorable.poll();
 			//TODO a supprimer
 //			if (neud == null) {neudSupprimer++;}
 //			else {
@@ -209,6 +245,21 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 		return neud;
 	}
 
+	private void loadMapExplorable(int niveau) {
+		Map<Long,NeudArbre> tempExplorable = synchro.synchronization(niveau);
+		mapExplorable.clear();
+		mapExplorable.addAll(tempExplorable.values());
+		putAll(tempExplorable);
+		nbtour=0;
+		try {
+			if (System.in.available()>0) {
+			System.exit(0);;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	@Override
 	public NeudArbre getOrDefault(Object key, NeudArbre defaultValue) {
 
@@ -223,7 +274,6 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 
 	@Override
 	public boolean remove(Object key, Object value) {
-
 		return super.remove(key, value);
 	}
 
@@ -269,14 +319,13 @@ public class MapArbreBD extends LinkedHashMap<Long, NeudArbre> implements MapArb
 	//ici on definit que l'element le plus ancien doit etre supprimer si le map depasse maxEnregistrement
 	@Override
 	protected boolean removeEldestEntry(Map.Entry<Long, NeudArbre> eldest) {
-		return size() > (maxEnregistrement);
+		//return size() > (maxEnregistrement);
+		return false;
 	}
 	
-	/**
-	 * netoyage de l'arbre
-	 *
-	 */
-//	
+	public int getNbexplorableTraiter() {
+		return nbtour;
+	}
 	
 	
 }

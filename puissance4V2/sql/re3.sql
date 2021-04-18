@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM neud WHERE explorable=1 and niveau=18;

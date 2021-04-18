@@ -4,13 +4,12 @@ package org.main;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Scanner;
-
 //import java.util.Scanner;
 
 //import org.P4Metier.Gagnee;
 import org.P4Metier.Ordinateur;
 import org.P4Metier.Factory.Factory;
+import org.P4Metier.Factory.TypeOrdinateur;
 import org.P4Metier.id.GestIdDonneeLong;
 
 
@@ -19,11 +18,10 @@ public class MainArbre {
 //	static private Scanner sc;
 
 	public static void main(String[] args) {
-		Factory factory = new Factory(true, true, true, true);
+		Factory factory = new Factory(TypeOrdinateur.ArbreBD);
 		GestIdDonneeLong donnee = (GestIdDonneeLong) factory.getGestIDDonnee();
 //		Gagnee gagnee = factory.getGagnee();
-		Ordinateur<Long> ordi = factory.getOrdinateur(donnee);
-		ordi.setTourMax(50);
+
 //		boolean gg = false;
 
 //		sc = new Scanner(System.in);
@@ -35,18 +33,18 @@ public class MainArbre {
 //		donnee.ajoutPion(1);// 4
 		
 		donnee.ajoutPion(4);// 1
-		donnee.ajoutPion(7);// 2
-		donnee.ajoutPion(4);// 3
-		donnee.ajoutPion(4);// 4
-		donnee.ajoutPion(4);// 5
-		
-		donnee.ajoutPion(3);// 6
-		donnee.ajoutPion(2);// 7
-		donnee.ajoutPion(3);// 8
-		donnee.ajoutPion(3);// 9
-		donnee.ajoutPion(4);// 10
-		donnee.ajoutPion(2);// 11
-		donnee.ajoutPion(1);// 12
+//		donnee.ajoutPion(7);// 2
+//		donnee.ajoutPion(4);// 3
+//		donnee.ajoutPion(4);// 4
+//		donnee.ajoutPion(4);// 5
+//		
+//		donnee.ajoutPion(3);// 6
+//		donnee.ajoutPion(2);// 7
+//		donnee.ajoutPion(3);// 8
+//		donnee.ajoutPion(3);// 9
+//		donnee.ajoutPion(4);// 10
+//		donnee.ajoutPion(2);// 11
+//		donnee.ajoutPion(1);// 12
 //		donnee.ajoutPion(3);// 13
 //		donnee.ajoutPion(7);// 14
 //		donnee.ajoutPion(3);// 15
@@ -59,7 +57,7 @@ public class MainArbre {
 //		donnee.ajoutPion(6);//22
 //		donnee.ajoutPion(6);//23
 //		donnee.ajoutPion(6);//24
-//		donnee.ajoutPion(4);
+		//donnee.ajoutPion(4);
 		
 		//donnee.ajoutPion(4);// 6
 		//donnee.ajoutPion(3);// 7
@@ -94,7 +92,8 @@ public class MainArbre {
 //				gg = gagnee.isGagnee(donnee);
 //			} else {
 		
-
+		Ordinateur<Long> ordi = factory.getOrdinateur(donnee);
+		ordi.setTourMax(50);
 				System.out.println("joueur :"+donnee.getJoueur()+"\n"+donnee+"\n"+donnee.getIdBaseDonnee());
 				Date debutlancement = new Date();
 				DateFormat fullDateFormat = DateFormat.getDateTimeInstance(
@@ -105,7 +104,8 @@ public class MainArbre {
 				System.out.println("\n"+fullDateFormat.format(debutlancement));
 				System.out.println("\n"+fullDateFormat.format(finlancement));
 				donnee.ajoutPion(aJouer);
-				System.out.println("\n"+factory.getMysqlArbre().getNeud(donnee.getIdBaseDonnee()));
+				System.out.println("joueur :"+donnee.getJoueur()+"\n"+donnee+"\n"+donnee.getIdBaseDonnee());
+//				System.out.println("\n"+factory.getMysqlArbre().getNeud(donnee.getIdBaseDonnee()));
 //				gg = gagnee.isGagnee(donnee);
 //			}
 //		}

@@ -1,10 +1,9 @@
 package org.P4Modele_.arbre;
 
-import java.util.ArrayList;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 import org.P4Metier.Factory.Factory;
 import org.P4Metier.id.GestIdDonneeLong;
@@ -27,60 +26,60 @@ public class ArbreBasic implements Arbre {
 		tableau = factory.getMapArbre();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.P4Arbre.Arbre1#getTron()
-	 */
-	@Override
-	public long getTron() {
-		// si il n'y a pas de tron declarer
-		if (tron == -1L) {
-			// je cree le tron.
-			NeudArbre neud = factory.getNeudArbre();
-			tron = neud.getId();
-			tableau.put(tron, neud);
-		}
-		return tron;
+//	/*
+//	 * (non-Javadoc)
+//	 *
+//	 * @see org.P4Arbre.Arbre1#getTron()
+//	 */
+//	@Override
+//	public long getTron() {
+//		// si il n'y a pas de tron declarer
+//		if (tron == -1L) {
+//			// je cree le tron.
+//			NeudArbre neud = factory.getNeudArbre();
+//			tron = neud.getId();
+//			tableau.put(tron, neud);
+//		}
+//		return tron;
+//
+//	}
 
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 *
+//	 * @see org.P4Arbre.Arbre1#setTron(java.lang.Long, int)
+//	 */
+//	@Override
+//	public Neud setTron(GestIdDonneeLong tron, int niveau) {
+//
+//		return setTron(tron, tableau.get(tron.getIdBaseDonnee()), niveau);
+//	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.P4Arbre.Arbre1#setTron(java.lang.Long, int)
-	 */
-	@Override
-	public Neud setTron(Long tron, int niveau) {
-
-		return setTron(tron, tableau.get(tron), niveau);
-	}
-
-	/**
-	 * initilaise le tron avec l'id et le neud fournit en parametre avant de
-	 * l'affecter on verifie que le neud existe sinon on ne fait rien.
-	 *
-	 * @param tron
-	 *            the tron to set
-	 * @param neud
-	 *            the neud to set
-	 */
-	protected Neud setTron(long tron, NeudArbre neud, int niveau) {
-		if (neud == null) {
-			neud = factory.getNeudArbre(tron, niveau);
-			neud.setTron(true);
-		}
-		if ((tron != -1)) {
-			tableau.clear();// TODO un peut violent a voir si pas possible de faire mieux
-			/*
-			 * ce qui devrait etre. Sur nouveau tron on suprime les lien parent. on met
-			 * l'ancien tron a supprimer. et on lance la procedure de suppression.
-			 */
-			this.tron = tron;
-			tableau.put(tron, neud);
-		}
-		return neud;
-	}
+//	/**
+//	 * initilaise le tron avec l'id et le neud fournit en parametre avant de
+//	 * l'affecter on verifie que le neud existe sinon on ne fait rien.
+//	 *
+//	 * @param tron
+//	 *            the tron to set
+//	 * @param neud
+//	 *            the neud to set
+//	 */
+//	protected Neud setTron(GestIdDonneeLong tron, NeudArbre neud, int niveau) {
+//		if (neud == null) {
+//			neud = factory.getNeudArbre(tron);
+//			neud.setTron(true);
+//		}
+//		if ((tron != null)) {
+//			tableau.clear();// TODO un peut violent a voir si pas possible de faire mieux
+//			/*
+//			 * ce qui devrait etre. Sur nouveau tron on suprime les lien parent. on met
+//			 * l'ancien tron a supprimer. et on lance la procedure de suppression.
+//			 */
+//			this.tron = tron.getIdBaseDonnee();
+//			tableau.put(this.tron, neud);
+//		}
+//		return neud;
+//	}
 
 	/**
 	 * retourn le tableau indispensable pour les test
@@ -112,16 +111,16 @@ public class ArbreBasic implements Arbre {
 		return str;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.P4Arbre.Arbre1#setCalculer(java.lang.Long, org.P4Arbre.Calculer)
-	 */
-	@Override
-	public void setCalculer(Long idCalculer, Calculer calculer) {
-		setCalculerPrivate(idCalculer, calculer);
-		//netoyage();
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 *
+//	 * @see org.P4Arbre.Arbre1#setCalculer(java.lang.Long, org.P4Arbre.Calculer)
+//	 */
+//	@Override
+//	public void setCalculer(Long idCalculer, Calculer calculer) {
+//		setCalculerPrivate(idCalculer, calculer);
+//		//netoyage();
+//	}
 
 	/**
 	 * affecte la valeur caculer pour l'id idCalculer mais ne fait pas le netoyage
@@ -140,14 +139,14 @@ public class ArbreBasic implements Arbre {
 			// le neud n'est plus explorable
 			neud.setExplorable(false);
 			// pour tous les parents
-			for (Long tempParent : neud.getParent()) {
+			for (Long tempParent : new HashSet<>(neud.getParent())) {
 				//on calcul
 				calculer(tempParent);
 
 			}
 			// on verifie si il y a des lien enfant suprimable et on marque ces lien en
 			// suprimable
-			enfantSuprimable(idCalculer);
+			supLienEnfantNonCalculer(idCalculer);
 
 		}
 
@@ -159,24 +158,22 @@ public class ArbreBasic implements Arbre {
 	 * @see org.P4Arbre.Arbre1#addEnfant(java.lang.Long, java.lang.Long, int)
 	 */
 	@Override
-	public Neud addEnfant(Long parent, Long enfant) {
+	public Neud addEnfant(Long parent, GestIdDonneeLong enfant) {
 		NeudArbre feuilleEnfant;
 		// recuperation de la feuille parent on espere qu'elle existe sinon le programe
 		// sortira une erreur
 		NeudArbre feuilleParent = tableau.get(parent);
-		feuilleParent.addEnfant(enfant);
+		
 		// recuperation de la feuille Enfant
 		// ici bug???
-		feuilleEnfant = tableau.get(enfant); // TODO ici a verifier
+		feuilleEnfant = tableau.get(enfant.getIdBaseDonnee()); // TODO ici a verifier
 		// si la feuille Enfant n'existe pas
 		if (feuilleEnfant == null) {
-			// creation de l'enfant
-			feuilleEnfant = factory.getNeudArbre(enfant, feuilleParent);
-			tableau.put(enfant, feuilleEnfant);
-		} else {
-			// ajout de parent dans l'enfant.
-			feuilleEnfant.addParent(parent);
-		}
+			// creation de l'enfant 
+			feuilleEnfant = factory.getNeudArbre(enfant,feuilleParent);
+			tableau.put(enfant.getIdBaseDonnee(), feuilleEnfant);
+		} 
+		feuilleParent.addEnfant(enfant.getIdBaseDonnee());
 		return feuilleEnfant;
 	}
 
@@ -227,17 +224,23 @@ public class ArbreBasic implements Arbre {
 	 * @param idCalculer
 	 *            l'id a calculer.
 	 */
-	protected void calculer(long idCalculer) {
+	@Override
+	public void calculer(Long idCalculer) {
 		boolean nonCalculer = false; // a voir si utile
 		boolean gagner = false;
 		int perdu = 0;
 		int egaliter = 0;
 		Calculer enfantCalculer;
-		int nbEnfant = tableau.get(idCalculer).getEnfant().size();
+		NeudArbre curent = tableau.get(idCalculer);
+		//si le neud n'a pas ete supprimer entre temps :( corrige un beug
+		if (curent!=null)
+		{
+			//TODO doit pouvoir se gerer avec un max() 4 gagner,3 non calculer,2 egaliter,1 perdu,0 non definit
+		int nbEnfant = curent.getEnfant().size();
 		// si il y a des enfant
-		if ((nbEnfant > 0) && (tableau.get(idCalculer).getCalculer() == Calculer.NONCALCULER)) {
+		if ((nbEnfant > 0) && (curent.getCalculer() == Calculer.NONCALCULER)) {
 			// pour tous les enfants
-			for (Long aCalculer : tableau.get(idCalculer).getEnfant()) {
+			for (Long aCalculer : curent.getEnfant()) {
 				enfantCalculer = tableau.get(aCalculer).getCalculer();
 				// je calul si gagner, si j'ai bien tous les enfant de calculer le nb de perdu,
 				// le nb d'egaliter
@@ -279,6 +282,7 @@ public class ArbreBasic implements Arbre {
 			}
 			// sionon si sur toute le enfant j'ai egaliter
 			// (peut import ou joue mon adversaire on tombe sur une egalit�)
+			//TODO gerer aussi le cas des (perdu+egalite) en egaliter
 			else if ((egaliter / nbEnfant) == 1) {
 
 				// alors on a egalit�
@@ -294,7 +298,7 @@ public class ArbreBasic implements Arbre {
 			// j'affecte le resutat calculer
 			setCalculerPrivate(idCalculer, resultatCalculer);
 		}
-
+		}
 	}
 
 //	/***
@@ -365,27 +369,23 @@ public class ArbreBasic implements Arbre {
 	 * @param id
 	 *            id du neud a verifier
 	 */
-	public boolean neudSuprimable(Long id) {
-		Neud courant = tableau.get(id);
-		// si le neud(id) n'est pas calculer
-		if (courant.getCalculer() == Calculer.NONCALCULER) {
-			// un des parent
-			for (Long parent : courant.getParent()) {
-				// est non calculer
-				if (tableau.get(parent).getCalculer() == Calculer.NONCALCULER) {
-					// l'id n'est pas suprimable
-					return false;
-				}
-			}
-		}
-		// neud calculer
-		else {
-			// on ne le suprime pas
-			return false;
-		}
-//		courant.setSupprimable(true);
-		return true;
-	}
+//	public boolean neudSuprimable(Long id) {
+//		Neud courant = tableau.get(id);
+//		// si le neud(id) est calculer
+//		if (courant.getCalculer() != Calculer.NONCALCULER) {
+//			return false;
+//		}
+//		// si un des parent est non calculer
+//		for (Long parent : courant.getParent()) {
+//
+//			if (tableau.get(parent).getCalculer() == Calculer.NONCALCULER) {
+//				// l'id n'est pas suprimable
+//				return false;
+//			}
+//		}
+////		le neud est non calculer et n'a pas de parent non calculer
+//		return true;
+	//}
 
 	/**
 	 * pour tout les enfant de neud(id) je lance neudSuprimable
@@ -393,9 +393,9 @@ public class ArbreBasic implements Arbre {
 	 * @param id
 	 *            id du neud sur le quelle travailler
 	 */
-	protected void enfantSuprimable(Long id) {
-		for (Long enfant : tableau.get(id).getEnfant()) {
-			if (neudSuprimable(enfant) || (tableau.get(enfant).getCalculer()==Calculer.NONCALCULER))
+	protected void supLienEnfantNonCalculer(Long id) {
+		for (Long enfant : new HashSet<>(tableau.get(id).getEnfant())) {
+			if (tableau . get (enfant) . getCalculer () == Calculer . NONCALCULER )
 			{
 				tableau.get(enfant).removeParent(id);
 			};

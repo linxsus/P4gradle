@@ -28,7 +28,6 @@ import org.P4Modele_.arbre.CopyTampon;
 import org.P4Modele_.arbre.NeudArbreBD;
 import org.P4Modele_.arbre.NeudArbreBasic;
 import org.P4Modele_.arbre.TamponBD;
-import org.P4Modele_.jeux.GestDonneeTabByte;
 import org.P4Modele_.jeux.GestDonneeTabInt;
 import org.P4Modele_.map.MapArbreBD;
 import org.P4Modele_.map.MapArbreBasic;
@@ -86,6 +85,10 @@ public class Factory {
 		this.gagneeTabByte = gagneeTabByte;
 		factory=this;
 	}
+	
+	public Factory(TypeOrdinateur typeOrdinateur) {
+		setOrdinateur(typeOrdinateur);
+	}
 
 	/**
 	 * a lancer au debut configure les type d'object a instancier pour l'ordinateur
@@ -105,6 +108,7 @@ public class Factory {
 		if (typeOrdinateur == TypeOrdinateur.Basic) {
 			idLong = true;
 		}
+		factory=this;
 	}
 
 	/**
@@ -187,11 +191,11 @@ public class Factory {
 	 *            (Neud) parent du neud cree
 	 * @return
 	 */
-	public NeudArbre getNeudArbre(Long l1, Neud n1) {
+	public NeudArbre getNeudArbre(GestIdDonnee<Long> base, Neud n1) {
 		if (BD) {
-			return new NeudArbreBD(this, l1, n1);
+			return new NeudArbreBD(this, (GestIdDonneeLong) base, n1);
 		} else {
-			return new NeudArbreBasic(this, l1, n1);
+			return new NeudArbreBasic(this, (GestIdDonneeLong) base, n1);
 		}
 	}
 
@@ -202,30 +206,14 @@ public class Factory {
 	 *            (Long)id du neud cree
 	 * @return
 	 */
-	public NeudArbre getNeudArbre(Long l1) {
+	public NeudArbre getNeudArbre(GestIdDonnee<Long>  base) {
 		if (BD) {
-			return new NeudArbreBD(this, l1);
+			return new NeudArbreBD(this, (GestIdDonneeLong) base);
 		} else {
-			return new NeudArbreBasic(this, l1);
+			return new NeudArbreBasic(this, (GestIdDonneeLong) base);
 		}
 	}
 
-	/**
-	 * creation d'un object de type Arbre NeudArbre(Long,int)
-	 *
-	 * @param l1
-	 *            (Long)id du neud tron
-	 * @param i1
-	 *            (int) niveau
-	 * @return
-	 */
-	public NeudArbre getNeudArbre(Long l1, int i1) {
-		if (BD) {
-			return new NeudArbreBD(this, l1, i1);
-		} else {
-			return new NeudArbreBasic(this, l1, i1);
-		}
-	}
 
 	/**
 	 * creation d'un object de type Arbre NeudArbre

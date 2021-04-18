@@ -1,6 +1,7 @@
 
+
 /**
- * packtage contenant les interfaces pour les object metier
+ * packtage contenant les interfaces pour les objects metier<br> 
  * 
  * @see org.P4Metier.Factory factory
  * 
@@ -16,3 +17,4 @@
  *
  */
 package org.P4Metier;
+

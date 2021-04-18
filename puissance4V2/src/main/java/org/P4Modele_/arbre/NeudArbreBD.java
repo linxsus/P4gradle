@@ -1,48 +1,49 @@
 package org.P4Modele_.arbre;
 
-import java.util.HashSet;
+
 import java.util.Set;
 
 import org.P4Metier.Factory.Factory;
+import org.P4Metier.arbre.SynchronizationBD;
+import org.P4Metier.id.GestIdDonneeLong;
 import org.P4Modele_.Calculer;
 import org.P4Modele_.Neud;
 import org.P4Modele_.map.MapArbreBD;
-import org.Persistant_.requette.SqlArbre;
+
 
 public class NeudArbreBD extends NeudArbreBasic {
 
-	protected TamponBD tampon;
-	protected SqlArbre mysqlarbre;
-	protected MapArbreBD mapArbre;
+	
+	 
+	//protected TamponBD tampon;
+	//protected SqlArbre mysqlarbre;
+	
+	protected boolean enBase;
+	protected boolean modifier;
 
 	public NeudArbreBD(Factory factory) {
 		super(factory);
-		init();
-		tampon.addNeud(this);
+
+		//tampon.addNeud(this);
 	}
 
-	public NeudArbreBD(Factory factory, long id, Neud n1) {
+	public NeudArbreBD(Factory factory, GestIdDonneeLong id, Neud n1) {
 		super(factory, id, n1);
-		init();
-		tampon.addNeud(this);
+
+		//tampon.addNeud(this);
 	}
 
-	public NeudArbreBD(Factory factory, long id, int i1) {
-		super(factory, id, i1);
-		init();
-		tampon.addNeud(this);
-	}
 
-	public NeudArbreBD(Factory factory, long id) {
+	public NeudArbreBD(Factory factory, GestIdDonneeLong id) {
 		super(factory, id);
-		init();
-		tampon.addNeud(this);
+
+		//this.tampon.addNeud(this);
 	}
 
 	public NeudArbreBD(Factory factory, Set<Long> parent, Set<Long> enfant, int etat,
 			long id, Calculer calculer, int niveau) {
 		super(factory);
-		init();
+
 		// if (parent == null) {
 		// parentIsUp = false;
 		// } else {
@@ -58,11 +59,13 @@ public class NeudArbreBD extends NeudArbreBasic {
 		this.id = id;
 		this.calculer = calculer;
 		this.niveau = niveau;
-		mysqlarbre = factory.getMysqlArbre();
 	}
 
-	private void init() {
-		tampon = factory.getTampon();
+	protected void init(Factory factory,GestIdDonneeLong id) {
+		//this.tampon = factory.getTampon();
+		enBase=false;
+		modifier=false;
+		super.init(factory, id);
 	}
 
 	/*
@@ -71,27 +74,43 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 * @see org.P4Arbre.NeudArbreBasic#setCalculer(org.P4Arbre.Calculer)
 	 */
 	@Override
-	public void setCalculer(Calculer calculer) {
-		if (this.calculer != calculer) {
-			super.setCalculer(calculer);
-			tampon.editNeud(this);
-			mapArbre.Update(id, this);
+	public boolean setCalculer(Calculer calculer) {
+		if (super.setCalculer(calculer)) {
+			modifier=true;		
+			//tampon.editNeud(this);
+			//mapArbre.Update(id, this);
+			return true;
 		}
-
+		return false;
 	}
 
+	/*
+	 * informe que le neud est en base
+	 */
+	public boolean setEnBase() {
+		if (enBase == false) {
+			enBase = true;
+			modifier = false;
+			return true;
+		}
+		return false;
+	}
+	
+	
 	/*
 	 * (non-Javadoc)
 	 *
 	 * @see org.P4Arbre.NeudArbreBasic#setExplorable(boolean)
 	 */
 	@Override
-	public void setExplorable(boolean explorable) {
-		if (isExplorable() != explorable) {
-			super.setExplorable(explorable);
-			tampon.editNeud(this);
-			mapArbre.Update(id, this);
+	public boolean setExplorable(boolean explorable) {
+		if (super.setExplorable(explorable)) {
+			modifier=true;
+			//tampon.editNeud(this);
+			//mapArbre.Update(id, this);
+			return true;
 		}
+		return false;
 	}
 
 	/*
@@ -100,19 +119,17 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 * @see org.P4Arbre.NeudArbreBasic#addParent(long)
 	 */
 	@Override
-	public void addParent(long newParent) {
-//		if (parent == null) {
-//			parent = new HashSet<>();
-//			parent.addAll(mysqlarbre.getParent(id));
-//		}
-//		if (parent.size()==0 && isSupprimable()) {
-//			setSupprimable(false);
-//		}
-		tampon.editNeud(this);
-		mapArbre.Update(id, this);
-		super.addParent(newParent);
-		
-
+	public boolean addParent(long newParent) {
+		if (super.addParent(newParent)) {
+			modifier = true;
+			//tampon.editNeud(this);
+			//mapArbre.Update(id, this);
+			if (isSupprimable()) {
+				setSupprimable(false);
+	 		}
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -121,14 +138,14 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 * @see org.P4Arbre.NeudArbreBasic#addEnfant(long, int)
 	 */
 	@Override
-	public void addEnfant(long newEnfant) {
-//		if (enfant == null) {
-//			enfant = new HashSet<>();
-//			enfant.addAll(mysqlarbre.getEnfant(id));
-//		}
-		super.addEnfant(newEnfant);
-		tampon.editNeud(this);
-		mapArbre.Update(id, this);
+	public boolean addEnfant(long newEnfant) {
+		if (super.addEnfant(newEnfant)) {
+			modifier = true;
+			//tampon.editNeud(this);
+			//mapArbre.Update(id, this);
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -137,16 +154,15 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 * @see org.P4Arbre.NeudArbreBasic#removeParent(java.lang.Long)
 	 */
 	@Override
-	public void removeParent(Long oldParent) {
-//		if (parent == null) {
-//			parent = new HashSet<>();
-//			parent.addAll(mysqlarbre.getParent(id));
-//		}
-		super.removeParent(oldParent);
-		tampon.editNeud(this);
-		mapArbre.Update(id, this);
-		// je l,enleve car normalement mis dans le remove enfant du parent.
-		// tampon.removeLien(oldParent, id);
+	public boolean removeParent(Long oldParent) {
+		if (super.removeParent(oldParent)) {
+			modifier = true;
+
+			//tampon.editNeud(this);
+			//mapArbre.Update(id, this);
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -155,14 +171,14 @@ public class NeudArbreBD extends NeudArbreBasic {
 	 * @see org.P4Arbre.NeudArbreBasic#removeEnfant(java.lang.Long)
 	 */
 	@Override
-	public void removeEnfant(Long oldEnfant) {
-//		if (enfant == null) {
-//			enfant = new HashSet<>();
-//			enfant.addAll(mysqlarbre.getEnfant(id));
-//		}
-		super.removeEnfant(oldEnfant);
-		tampon.editNeud(this);
-		mapArbre.Update(id, this);
+	public boolean removeEnfant(Long oldEnfant) {
+		if (super.removeEnfant(oldEnfant)) {
+			modifier = true;
+			//tampon.editNeud(this);
+			//mapArbre.Update(id, this);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -183,22 +199,83 @@ public class NeudArbreBD extends NeudArbreBasic {
 		return super.getEnfant();
 	}
 
-	public void setMapArbre(MapArbreBD mapArbreBD) {
-		this.mapArbre = mapArbreBD;
+	
+
+
+	public boolean isSupprimable() {
+		return ((etat & SUPPRIMABLE) == SUPPRIMABLE);
 	}
 
-	@Override
-	public void setSupprimable(boolean supprimable) {
-		if (isSupprimable() != supprimable) {
-			super.setSupprimable(supprimable);
-			tampon.editNeud(this);
-			// si le neud est un nouveau
-			// je le supprime des nouveau neud
-			// sinon je le met dans les updates
-//			if (!tampon.getNewNeud().remove(this)) {
-//			    mapArbre.Update(id, this);
-//			}
+	
+	protected boolean setSupprimable(boolean supprimable) {
+		if (supprimable != isSupprimable()) { // si on change l'etat supprimable du neud
+			modifier = true;
+			if (!enBase) { // si il n'est pas en base
+				return super.setSupprimable(supprimable); // il se comporte comme un neud normal
+			} else {	// sinon			 
+				if (supprimable) { //si je le met en supprimable
+					//TODO on fait des suppression d'etat danger!!!!!
+					etat = SUPPRIMABLE;// je met son etat en suprimable
+										//si il est supprimable il n'est que supprimable
+					// si j'ai encore de la place dans le map je supprime les lien ce qui peut suprimer les enfants par cascade
+					if (factory.getMapArbre().size()<MapArbreBD.MAX_NEUD) { 
+						removeAllEnfant();  
+					}
+					
+				} else { //je repasse le neud en non supprimable
+					etat = (byte) (etat & (~SUPPRIMABLE));
+				}
+				
+				//tampon.editNeud(this);
+				return true;
+			}
 		}
-		
+		return false;
+	}
+	
+
+	public boolean addParent(Set<Long> newParent) {
+		if (!(this.parent.size() == newParent.size() && (this.parent.containsAll(newParent)))) {
+				if ((newParent.size() == 0) && (calculer == Calculer.NONCALCULER)) {
+					setSupprimable(true);
+				} else {
+					// si le neud est supprimable et qu'on lui rajoute des parent il n'est plus
+					// supprimable
+					if (isSupprimable()) {
+						etat = 3; // on le definit comme feuille et explorable c'est une recreation du neud
+					}
+				}
+			
+			this.parent = newParent;
+			return true;
+		}
+		return false;
+	}
+
+
+
+	public boolean addEnfant(Set<Long> newEnfant) {
+		if (!(this.enfant.size() == newEnfant.size() && (this.enfant.containsAll(newEnfant)))) {
+		this.enfant = newEnfant;
+		return true;
+		}
+		return false;
+
+	}
+	
+	
+	public boolean getEnBase() {
+		return enBase;
+	}
+	
+	public boolean setModifier(boolean modifier) {
+		if (this.modifier!=modifier) {
+			this.modifier=modifier;
+			return true;
+		}
+		return false;
+	}
+	public boolean getModifier() {
+		return modifier;
 	}
 }

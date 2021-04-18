@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 public class MysqlConnection {
-	private static String url = "jdbc:mariadb://localhost/puissance4V3?autoReconnect=true&useSSL=false";
+	private static String url = "jdbc:mariadb://localhost/p4quantum?autoReconnect=true&useSSL=false";
+	//private static String url = "jdbc:mariadb://localhost/puissance4V3?autoReconnect=true&useSSL=false";
 	private static String login = "Puissance4";
 	private static String passwd = "p4C@llans";
 	private static Connection cn = null;

@@ -28,15 +28,19 @@ public class ExecuteSqlInsertMultiple<T> {
 		st = null;
 		try {
 			st = cn.prepareStatement(sql);
-//			int i = 0;
+			int i = 0;
 			for (T t : m) {
 				forEach(t);
 				st.addBatch();
-//				i++;
-//				// System.out.println(st);
-//				if ((i % 1000) == 0) {
-//					st.executeBatch(); // Execute every 1000 items.
-//				}
+				if ((i % 1000000) == 0) {
+					System.out.println("");
+				}
+				if ((i % 10000) == 0) {
+					st.executeBatch(); // Execute every 1000 items.
+					System.out.print("-");
+					
+				}
+				i++;
 			}
 			
 			st.executeBatch();
@@ -52,6 +56,7 @@ public class ExecuteSqlInsertMultiple<T> {
 				e.printStackTrace();
 			}
 		}
+		
 	}
 
 	public void forEach(T t) throws SQLException {

@@ -10,7 +10,7 @@ public interface Neud {
 	 * @return le quantum
 	 */
 	
-	int getQunatum();
+	int getQuantum();
 	
 	/**
 	 * @return the id
@@ -54,29 +54,17 @@ public interface Neud {
 	 */
 	boolean isExplorable();
 
-	/**
-	 * @return supprimable
-	 */
-	boolean isSupprimable();
-	
-	/**
-	 * retourne si on est bien sur le niveau et si le neud est supprimable
-	 *
-	 * @return supprimable
-	 */
-	boolean isSupprimable(int niveau);
-	
-	/**
-	 * affect le neud en tant que tron
-	 */
-	void setTron(boolean tron);
-	
-	/**
-	 * demande si le neud est un tron
-	 * 
-	 * @return tron
-	 */
-	boolean isTron();
+//	/**
+//	 * affect le neud en tant que tron
+//	 */
+//	boolean setTron(boolean tron);
+//	
+//	/**
+//	 * demande si le neud est un tron
+//	 * 
+//	 * @return tron
+//	 */
+//	boolean isTron();
 	
 	/**
 	 * retourne l'etat du neud <br>
@@ -90,8 +78,6 @@ public interface Neud {
 	 * @return etat
 	 */
 	int etat();
-	
-	
 	
 	/*
 	 * (non-Javadoc)
